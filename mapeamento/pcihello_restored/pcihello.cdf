@@ -11,3 +11,4 @@ ChainEnd;
 AlteraBegin;
 	ChainType(JTAG);
 AlteraEnd;
+ 
