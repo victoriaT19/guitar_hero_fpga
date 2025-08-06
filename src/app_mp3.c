@@ -122,7 +122,9 @@ int main(int argc, char *argv[]) {
     FILE* output = fopen("notes.txt", "w");
 
     printf("Analisando áudio com taxa de amostragem de %d Hz...\n", SAMPLE_RATE);
-
+    
+    char ultima_nota_encontrada[5] = "";
+    
     for (long pcm_offset = 0; pcm_offset + (FRAME_SIZE * info.channels) < pcm_size; pcm_offset += (FRAME_SIZE * info.channels)) {
         for (int i = 0; i < FRAME_SIZE; i++) {
             if (info.channels == 2) {
@@ -145,9 +147,13 @@ int main(int argc, char *argv[]) {
         if (max_mag > THRESHOLD) {
             const char* note = freq_to_note(freq);
             if (note) {
-                double time = (double)pcm_offset / (info.channels * SAMPLE_RATE);
-                fprintf(output, "%.2f\t%s\n", time, note);
-                printf("Tempo: %.2f, Nota: %s, Freq: %.2f Hz, Mag: %.2f\n", time, note, freq, max_mag);
+                if (strcmp(note, ultima_nota_encontrada) != 0) {
+                    double time = (double)pcm_offset / (info.channels * SAMPLE_RATE);
+                    fprintf(output, "%.2f\t%s\n", time, note);
+
+                    // Atualiza a "memória" com a nota que acabamos de escrever
+                    strcpy(ultima_nota_encontrada, note);
+                }
             }
         }
     }
