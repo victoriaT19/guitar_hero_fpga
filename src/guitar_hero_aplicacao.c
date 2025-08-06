@@ -29,6 +29,13 @@ typedef struct {
     
     struct timeval start_time; // Momento em que o jogo começou
 } GameState;
+
+//mapeamento dinamico
+typedef struct {
+    char note_name[5];
+    int track_index;
+} NoteMapping;
+
 struct termios orig_termios;
 
 void carregar_nivel(GameState *state);
@@ -188,31 +195,53 @@ void carregar_nivel(GameState *state) {
         exit(1);
     }
 
-    state->note_count = 0;
-    float timestamp;
-    char note_name[5];
-    
-    while (fscanf(file, "%f %s", &timestamp, note_name) == 2) {
-        if (state->note_count < MAX_NOTES) {
-            state->level_notes[state->note_count].timestamp = timestamp;
-            strcpy(state->level_notes[state->note_count].note_name, note_name);
-            
-            if (strcmp(note_name, "C4") == 0) state->level_notes[state->note_count].note_index = 0;
-            else if (strcmp(note_name, "D4") == 0) state->level_notes[state->note_count].note_index = 1;
-            else if (strcmp(note_name, "E4") == 0) state->level_notes[state->note_count].note_index = 2;
-            else if (strcmp(note_name, "F4") == 0) state->level_notes[state->note_count].note_index = 3;
-            else if (strcmp(note_name, "G4") == 0) state->level_notes[state->note_count].note_index = 4;
-            else if (strcmp(note_name, "A4") == 0) state->level_notes[state->note_count].note_index = 5;
-            else if (strcmp(note_name, "B4") == 0) state->level_notes[state->note_count].note_index = 6;
+    // === ETAPA 1: Descobrir as notas únicas e criar o mapeamento ===
+    NoteMapping map[128]; // Um mapa para até 128 notas únicas
+    int unique_notes_count = 0;
+    char note_name_buffer[5];
+    float timestamp_buffer;
 
-            else{
-                continue;
+    printf("Mapeando notas da musica...\n");
+    while (fscanf(file, "%f %s", &timestamp_buffer, note_name_buffer) == 2) {
+        int found = 0;
+        // Verifica se a nota já foi mapeada
+        for (int i = 0; i < unique_notes_count; i++) {
+            if (strcmp(map[i].note_name, note_name_buffer) == 0) {
+                found = 1;
+                break;
             }
-
+        }
+        // Se não foi encontrada, adiciona ao mapa
+        if (!found) {
+            strcpy(map[unique_notes_count].note_name, note_name_buffer);
+            map[unique_notes_count].track_index = unique_notes_count;
+            printf("  -> Nota '%s' mapeada para a Pista %d\n", map[unique_notes_count].note_name, map[unique_notes_count].track_index);
+            unique_notes_count++;
+        }
+    }
+    printf("%d pistas necessarias para esta musica.\n", unique_notes_count);
+    
+    // === ETAPA 2: Carregar as notas do jogo usando o mapeamento criado ===
+    rewind(file); // Volta para o início do arquivo
+    state->note_count = 0;
+    while (fscanf(file, "%f %s", &timestamp_buffer, note_name_buffer) == 2) {
+        if (state->note_count < MAX_NOTES) {
+            state->level_notes[state->note_count].timestamp = timestamp_buffer;
+            strcpy(state->level_notes[state->note_count].note_name, note_name_buffer);
+            
+            // Procura a nota no mapa para obter o track_index
+            for (int i = 0; i < unique_notes_count; i++) {
+                if (strcmp(map[i].note_name, note_name_buffer) == 0) {
+                    state->level_notes[state->note_count].note_index = map[i].track_index;
+                    break;
+                }
+            }
+            
             state->level_notes[state->note_count].foi_processada = 0;
             state->note_count++;
         }
     }
+
     fclose(file);
     printf("%d notas carregadas do nivel.\n", state->note_count);
 }

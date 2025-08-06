@@ -3,3 +3,9 @@ gcc src/app_mp3.c kissfft/kiss_fft.c -o criador_mapa -Iinclude -Ikissfft -lm
 
 Para executar o mapeamento no audio escolhido:
 ./criador_mapa musica_piano.mp3
+
+Para executar a aplicacao do guitar hero:
+gcc src/guitar_hero_aplicacao.c -o jogo -lSDL2 -lSDL2_mixer
+
+Executar:
+./jogo
