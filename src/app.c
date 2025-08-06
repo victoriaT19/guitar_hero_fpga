@@ -7,7 +7,7 @@
 
 #define SAMPLE_RATE 44100
 #define FRAME_SIZE 1024
-#define THRESHOLD 0.2  
+#define THRESHOLD 0.2
 
 #define NUM_NOTES 24
 
