@@ -6,15 +6,19 @@
 #include <math.h>
 
 #define FRAME_SIZE 4096
-#define THRESHOLD 0.2
+#define THRESHOLD 10.0
 
-#define NUM_NOTES 24
+#define NUM_NOTES 48
 
 const char* NOTES[NUM_NOTES] = {
+    "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2",
+    "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3",
     "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4",
     "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5"
 };
 const float FREQS[NUM_NOTES] = {
+    65.41, 69.30, 73.42, 77.78, 82.41, 87.31, 92.50, 98.00, 103.83, 110.00, 116.54, 123.47,
+    130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 185.00, 196.00, 207.65, 220.00, 233.08, 246.94,
     261.63, 277.18, 293.66, 311.13, 329.63, 349.23, 369.99, 392.00, 415.30, 440.00, 466.16, 493.88,
     523.25, 554.37, 587.33, 622.25, 659.25, 698.46, 739.99, 783.99, 830.61, 880.00, 932.33, 987.77
 };
@@ -32,7 +36,7 @@ const char* freq_to_note(float freq) {
         }
     }
     
-    if (note_idx != -1 && min_diff < FREQS[note_idx] * 0.03) {
+    if (note_idx != -1 && min_diff < FREQS[note_idx] * 0.05) {
         return NOTES[note_idx];
     }
     return NULL;
@@ -56,31 +60,62 @@ int main(int argc, char *argv[]) {
     fseek(f, 0, SEEK_END);
     long file_size = ftell(f);
     fseek(f, 0, SEEK_SET);
-    unsigned char* mp3_buffer = (unsigned char*)malloc(file_size);
-    fread(mp3_buffer, 1, file_size, f);
+    unsigned char* mp3_buffer_orig = (unsigned char*)malloc(file_size);
+    if (!mp3_buffer_orig) {
+        printf("Erro ao alocar memoria para o buffer do MP3.\n");
+        fclose(f);
+        return 1;
+    }
+    if (fread(mp3_buffer_orig, 1, file_size, f) != file_size) {
+        printf("Erro ao ler o arquivo MP3 para o buffer.\n");
+        free(mp3_buffer_orig);
+        fclose(f);
+        return 1;
+    }
     fclose(f);
 
     static mp3dec_t dec;
     mp3dec_init(&dec);
     mp3dec_frame_info_t info;
     
-    // Buffer para o áudio decodificado (PCM)
-    // Usamos um buffer grande para guardar o áudio todo.
-    // Para arquivos muito grandes, uma abordagem de streaming seria melhor.
-    short* pcm_buffer = (short*)malloc(1024 * 1024 * 4); // Buffer de 8MB para o PCM
+    //calcular o tamanho necessario
+    size_t total_pcm_samples = 0;
+    unsigned char *mp3_ptr = mp3_buffer_orig;
+    long file_size_remaining = file_size;
+
+    int samples = 0;
+
+    while ((samples = mp3dec_decode_frame(&dec, mp3_ptr, file_size_remaining, NULL, &info)) > 0) {
+        total_pcm_samples += samples * info.channels;
+        mp3_ptr += info.frame_bytes;
+        file_size_remaining -= info.frame_bytes;
+    }
+
+    //alocar memoria e decodificacao
+    short* pcm_buffer = (short*)malloc(total_pcm_samples * sizeof(short));
+    if (!pcm_buffer) {
+        printf("Erro ao alocar memoria para o buffer PCM.\n");
+        free(mp3_buffer_orig);
+        return 1;
+    }
+
     size_t pcm_size = 0;
-    int samples;
+    mp3dec_init(&dec); // Reinicia o decodificador
+    mp3_ptr = mp3_buffer_orig; // Volta para o início do buffer do MP3
+    file_size_remaining = file_size;
     
     // Decodifica o MP3 inteiro para a memória
-    while ((samples = mp3dec_decode_frame(&dec, mp3_buffer, file_size, pcm_buffer + pcm_size, &info)) > 0) {
+    while ((samples = mp3dec_decode_frame(&dec, mp3_ptr, file_size_remaining, pcm_buffer + pcm_size, &info)) > 0) {
         pcm_size += samples * info.channels;
-        file_size -= info.frame_bytes;
-        mp3_buffer += info.frame_bytes;
+        mp3_ptr += info.frame_bytes;
+        file_size_remaining -= info.frame_bytes;
     }
-    free(mp3_buffer - (ftell(f) - file_size)); // Libera o buffer original do mp3
+
+    free(mp3_buffer_orig);
     
     const int SAMPLE_RATE = info.hz;
 
+    //analise com fft
     kiss_fft_cfg cfg = kiss_fft_alloc(FRAME_SIZE, 0, NULL, NULL);
     kiss_fft_cpx in[FRAME_SIZE];
     kiss_fft_cpx out[FRAME_SIZE];
@@ -88,9 +123,8 @@ int main(int argc, char *argv[]) {
 
     printf("Analisando áudio com taxa de amostragem de %d Hz...\n", SAMPLE_RATE);
 
-    for (long pcm_offset = 0; pcm_offset + FRAME_SIZE < pcm_size; pcm_offset += FRAME_SIZE) {
+    for (long pcm_offset = 0; pcm_offset + (FRAME_SIZE * info.channels) < pcm_size; pcm_offset += (FRAME_SIZE * info.channels)) {
         for (int i = 0; i < FRAME_SIZE; i++) {
-            // Se for estéreo, pegamos a média dos canais. Se for mono, usamos direto.
             if (info.channels == 2) {
                 in[i].r = (float)(pcm_buffer[pcm_offset + i*2] + pcm_buffer[pcm_offset + i*2 + 1]) / 2.0f / 32768.0f;
             } else {
@@ -98,27 +132,22 @@ int main(int argc, char *argv[]) {
             }
             in[i].i = 0;
         }
-
         kiss_fft(cfg, in, out);
 
         float max_mag = 0;
         int max_idx = 0;
-
-        for (int i = 0; i < FRAME_SIZE / 2; i++) {
+        for (int i = 1; i < FRAME_SIZE / 2; i++) { // Começa em i=1 para ignorar o componente DC
             float mag = sqrt(out[i].r * out[i].r + out[i].i * out[i].i);
-            if (mag > max_mag) {
-                max_mag = mag;
-                max_idx = i;
-            }
+            if (mag > max_mag) { max_mag = mag; max_idx = i; }
         }
-        
         float freq = (float)max_idx * SAMPLE_RATE / FRAME_SIZE;
-
+        
         if (max_mag > THRESHOLD) {
             const char* note = freq_to_note(freq);
             if (note) {
-                float time = (float)pcm_offset / (info.channels * SAMPLE_RATE);
+                double time = (double)pcm_offset / (info.channels * SAMPLE_RATE);
                 fprintf(output, "%.2f\t%s\n", time, note);
+                printf("Tempo: %.2f, Nota: %s, Freq: %.2f Hz, Mag: %.2f\n", time, note, freq, max_mag);
             }
         }
     }

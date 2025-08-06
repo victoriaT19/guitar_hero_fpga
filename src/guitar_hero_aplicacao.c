@@ -72,7 +72,7 @@ int main() {
         return -1;
     }
 
-    const char *arquivo_musica = "musica_sweet.mp3";
+    const char *arquivo_musica = "musica_piano.mp3";
 
     Mix_Music *musica_de_fundo = Mix_LoadMUS(arquivo_musica);
     if (musica_de_fundo == NULL) {
