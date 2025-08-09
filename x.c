@@ -1,198 +1,377 @@
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef LCD_H_INCLUDED
+#define LCD_H_INCLUDED
+
 #include <stdint.h>
+
+#define LCD_CLEARDISPLAY 0x01
+#define LCD_RETURNHOME 0x02
+#define LCD_ENTRYMODESET 0x04
+#define LCD_DISPLAYCONTROL 0x08
+#define LCD_CURSORSHIFT 0x10
+#define LCD_FUNCTIONSET 0x20
+#define LCD_SETCGRAMADDR 0x40
+#define LCD_SETDDRAMADDR 0x80
+
+// flags for display entry mode
+#define LCD_ENTRYSHIFTINCREMENT 0x01
+#define LCD_ENTRYLEFT 0x02
+
+// flags for display and cursor control
+#define LCD_BLINKON 0x01
+#define LCD_CURSORON 0x02
+#define LCD_DISPLAYON 0x04
+
+// flags for display and cursor shift
+#define LCD_MOVERIGHT 0x04
+#define LCD_DISPLAYMOVE 0x08
+
+// flags for function set
+#define LCD_5x10DOTS 0x04
+#define LCD_2LINE 0x08
+#define LCD_8BITMODE 0x10
+
+#define LCD_ENABLE_BIT 0x04
+
+
+// Modes for lcd_send_byte
+#define LCD_CHARACTER  1
+#define LCD_COMMAND    0
+
+#define MAX_LINES      2
+#define MAX_CHARS      16
+
+#define LCD_DELAY_US 600
+
+void lcd_init(int fd); 
+
+void lcd_clear(void); 
+
+// go to location on LCD
+void lcd_set_cursor(int line, int position); 
+
+void lcd_char(char val); 
+
+void lcd_string(const char *s);
+
+#endif
+
+lcd.c
+
+#include "lcd.h"
+#include "ioctl_cmds.h"
+#include <stdio.h>
+#include <unistd.h>	/* close() read() write() */
+#include <fcntl.h>	/* open() */
+#include <sys/ioctl.h>	/* ioctl() */
+
+static int file_id = 0;
+
+/* Quick helper function for single byte transfers */
+static void write_byte(uint16_t val) 
+{
+    val = val | 0x800;
+    ioctl(file_id, WR_LCD_DISPLAY);
+    write(file_id, &val, sizeof(val));
+}
+
+static void lcd_toggle_enable(uint8_t val, int mode) 
+{
+    // Toggle enable pin on LCD display
+    // We cannot do this too quickly or things don't work
+    write_byte(val | (mode << 10) | 0x100);
+    usleep(LCD_DELAY_US);
+    write_byte(val | (mode << 10));
+    usleep(LCD_DELAY_US);
+}
+
+
+void lcd_init(int fd) 
+{
+	file_id = fd;
+	lcd_toggle_enable(0x08, LCD_COMMAND);
+    lcd_toggle_enable(0x0f, LCD_COMMAND);
+    lcd_toggle_enable(LCD_ENTRYMODESET | LCD_ENTRYLEFT, LCD_COMMAND);
+    lcd_toggle_enable(LCD_FUNCTIONSET | 0x10 | LCD_2LINE, LCD_COMMAND);
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+}
+
+void lcd_clear(void) 
+{
+    lcd_toggle_enable(LCD_CLEARDISPLAY, LCD_COMMAND);
+}
+
+// go to location on LCD
+void lcd_set_cursor(int line, int position) 
+{
+    int val = (line == 0) ? 0x80 + position : 0xC0 + position;
+    lcd_toggle_enable(val, LCD_COMMAND);
+}
+
+void lcd_char(char val) 
+{
+    lcd_toggle_enable(val, LCD_CHARACTER);
+}
+
+void lcd_string(const char *s) 
+{
+    while (*s)
+        lcd_char(*s++);
+}
+
+#ifndef DEVICE_H_INCLUDED
+#define DEVICE_H_INCLUDED
+
+#include "typedefs.h"
+#include "7_seg.h"
+#include "lcd.h"
+
+void d_init();
+
+uint8_t d_button_read();
+
+uint32_t d_switch_read();
+
+void d_write_green_leds(int32_t i);
+void d_write_red_leds(int32_t i);
+
+void d_shutdown();
+	
+#endif
+
+device.c 
+
+
+#include "device.h"
+#include "ioctl_cmds.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <termios.h>
-#include <time.h> // Adicionado para usar o clock_gettime
+#include <sys/ioctl.h>	/* ioctl() */
+static int32_t file_id = 0;
 
-// Definir os comandos ioctl
-#define RD_SWITCHES   _IO('a', 'a')
-#define RD_PBUTTONS   _IO('a', 'b')
-#define WR_L_DISPLAY  _IO('a', 'c')
-#define WR_R_DISPLAY  _IO('a', 'd')
-#define WR_RED_LEDS   _IO('a', 'e')
-#define WR_GREEN_LEDS _IO('a', 'f')
+void d_init()
+{
+	file_id = open("/dev/mydev", O_RDWR);
 
-// Definições para os displays de 7 segmentos
-#define HEX_0 0xFFFFFFC0
-#define HEX_1 0xFFFFFFF9
-#define HEX_2 0xFFFFFFA4
-#define HEX_3 0xFFFFFFB0
-#define HEX_4 0xFFFFFF99
-#define HEX_5 0xFFFFFF92
-#define HEX_6 0xFFFFFF82
-#define HEX_7 0xFFFFFFF8
-#define HEX_8 0xFFFFFF80
-#define HEX_9 0xFFFFFF90
-
-// Variável para o descritor de arquivo do dispositivo
-static int fd = -1;
-
-// Mapeamento dos hexadecimais para os displays
-static const uint32_t hex_digits[] = {
-    HEX_0, HEX_1, HEX_2, HEX_3, HEX_4,
-    HEX_5, HEX_6, HEX_7, HEX_8, HEX_9
-};
-
-// Variáveis para a lógica de temporização dos LEDs
-static int led_is_on = 0;
-static long long led_on_time_ms = 0;
-
-// Obtém o tempo atual em milissegundos
-long long get_current_time_ms() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (long long)ts.tv_sec * 1000 + (long long)ts.tv_nsec / 1000000;
+	seg7_init(file_id);
+	lcd_init (file_id);
+	
+	int i = 0;
+	ioctl(file_id, WR_GREEN_LEDS);
+	write(file_id, &i, sizeof(i));
+	
+	ioctl(file_id, WR_RED_LEDS);
+	write(file_id, &i, sizeof(i));
 }
 
-// Configura o terminal para não bloquear a leitura de teclado
-void set_terminal_raw_mode() {
-    struct termios old_termios, new_termios;
-    tcgetattr(STDIN_FILENO, &old_termios);
-    new_termios = old_termios;
-    new_termios.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+uint8_t d_button_read()
+{
+	uint8_t r = 0, e = 0;
+	ioctl(file_id, RD_PBUTTONS);
+	e = read(file_id, &r, sizeof(r));
+	return r;
 }
 
-// Restaura as configurações originais do terminal
-void restore_terminal_mode() {
-    struct termios old_termios;
-    tcgetattr(STDIN_FILENO, &old_termios);
-    old_termios.c_lflag |= (ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+uint32_t d_switch_read()
+{
+	uint32_t r = 0, e = 0;
+	ioctl(file_id, RD_SWITCHES);
+	e = read(file_id, &r, sizeof(r));
+	return r;
 }
 
-// Checa se uma tecla foi pressionada
-int kbhit() {
-    struct timeval tv;
-    fd_set fds;
-    tv.tv_sec = 0;
-    tv.tv_usec = 0;
-    FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
-    select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
-    return FD_ISSET(STDIN_FILENO, &fds);
+void d_write_green_leds(int32_t i)
+{
+	int retval;
+	ioctl(file_id, WR_GREEN_LEDS);
+	retval = write(file_id, &i, sizeof(i));
 }
 
-// Envia um valor para os displays de 7 segmentos
-void set_display(int number) {
-    if (fd == -1) return;
-    if (number < 0 || number > 9) return;
-
-    // Acender o display da esquerda com o número
-    uint32_t val_left = hex_digits[number];
-    ioctl(fd, WR_L_DISPLAY);
-    write(fd, &val_left, sizeof(val_left));
-
-    // Acender o display da direita com o número
-    uint32_t val_right = hex_digits[number];
-    ioctl(fd, WR_R_DISPLAY);
-    write(fd, &val_right, sizeof(val_right));
-
-    printf("Exibindo numero %d nos displays.\n", number);
+void d_write_red_leds(int32_t i)
+{
+	int retval;
+	ioctl(file_id, WR_RED_LEDS);
+	retval = write(file_id, &i, sizeof(i));
 }
 
-// Acende os LEDs da cor especificada e marca o tempo
-void set_leds(int color) {
-    if (fd == -1) return;
-
-    // Ajustamos os valores para corresponderem ao número de LEDs no hardware
-    // LEDs Verdes (9) e LEDs Vermelhos (18)
-    uint32_t val_on_green = 0x1FF;   // 9 bits para os LEDs verdes
-    uint32_t val_on_red = 0x3FFFF;   // 18 bits para os LEDs vermelhos
-    uint32_t val_off = 0x00000;
-
-    if (color == 1) { // Verde
-        ioctl(fd, WR_GREEN_LEDS);
-        write(fd, &val_on_green, sizeof(val_on_green));
-        ioctl(fd, WR_RED_LEDS);
-        write(fd, &val_off, sizeof(val_off));
-        printf("LEDs Verdes acesos.\n");
-    } else { // Vermelho
-        ioctl(fd, WR_RED_LEDS);
-        write(fd, &val_on_red, sizeof(val_on_red));
-        ioctl(fd, WR_GREEN_LEDS);
-        write(fd, &val_off, sizeof(val_off));
-        printf("LEDs Vermelhos acesos.\n");
-    }
-
-    // Grava o tempo em que os LEDs foram acesos
-    led_on_time_ms = get_current_time_ms();
-    led_is_on = 1;
+void d_shutdown()
+{
+	close(file_id);
 }
 
-// Apaga todos os LEDs
-void clear_leds() {
-    if (fd == -1) return;
-    uint32_t val_off = 0x00;
-    ioctl(fd, WR_GREEN_LEDS);
-    write(fd, &val_off, sizeof(val_off));
-    ioctl(fd, WR_RED_LEDS);
-    write(fd, &val_off, sizeof(val_off));
-    led_is_on = 0;
+
+#ifndef SEVEN_SEG_H_INCLUDED
+#define SEVEN_SEG_H_INCLUDED
+
+
+void seg7_init(int fd);
+void seg7_reset(int idx);
+void seg7_write_single(int seg, int number, int _reset);
+int seg7_convert_digit(int n);
+
+void seg7_write_str(char *number);
+void seg7_write(int number);
+
+void seg7_switch_base(int b);
+
+#endif
+
+seg.c
+
+#include "7_seg.h"
+#include "ioctl_cmds.h"
+#include <stdint.h>
+#include <fcntl.h> /* open() */
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/ioctl.h> /* ioctl() */
+#include <sys/types.h>
+#include <unistd.h> /* close() read() write() */
+
+static int file_d = 0;
+int32_t current_R = 0;
+int32_t current_L = 0;
+
+void seg7_init(int fd) {
+  file_d = fd;
+  seg7_reset(0);
+  seg7_reset(1);
 }
 
-// Lê o estado dos push-buttons
-void read_pbuttons() {
-    if (fd == -1) return;
+void seg7_reset(int idx) {
+  int reset = 0xfffffff;
+  // 0 vai ser o da direita da frente da placa e 1 o da esquerda
+  if (idx) {
+    ioctl(file_d, WR_R_DISPLAY);
+  } else {
+    ioctl(file_d, WR_L_DISPLAY);
+  }
+  write(file_d, &reset, sizeof(reset));
+}
+void seg7_write_single(int seg, int number, int _reset) {
+  // o seg e o index do seg comecando da direita de frente para a placa
+  // em 0-7, o reset ele reseta os outros ou nao
+  // R e L ta ao contrario, de costas para a placa, frente para as saidas de
+  // cabos se reset 1 ele limpa se nao ele mantem os outros
+  if (_reset) {
+    current_L = 0;
+    current_R = 0;
+    seg7_reset(1);
+    seg7_reset(0);
+  }
+  if (seg > 7) {
+    return;
+  }
 
-    // IMPORTANTE: Chamar ioctl antes de ler para configurar o ponteiro no driver
-    ioctl(fd, RD_PBUTTONS);
+  if (seg > 3) {
+  } else {
+  }
 
-    uint32_t buttons = 0;
-    ssize_t r = read(fd, &buttons, sizeof(buttons));
-    if (r == sizeof(buttons)) {
-        buttons = (~buttons) & 0xF; // Os botões são ativos baixo
-        if (buttons != 0) {
-            printf("Botoes pressionados: 0x%X\n", buttons);
-        }
-    }
+  int d = seg7_convert_digit(number) << (7 * (seg % 4));
+  int mask =
+      ~(0x7f << (7 * (seg % 4))); // para manter ou nao apenas o digto escolhido
+
+  // TODO: Testar funcao de buffer_write, para ele escrever os current_*
+  if (seg > 3) {
+    d = (current_L & mask) | d;
+    ioctl(file_d, WR_R_DISPLAY);
+    current_L = d;
+
+  } else {
+    d = (current_R & mask) | d;
+    ioctl(file_d, WR_L_DISPLAY);
+    current_R = d;
+  }
+
+  d = ~d;
+  write(file_d, &d, sizeof(d));
 }
 
-int main() {
-    // Abre o arquivo do dispositivo
-    fd = open("/dev/mydev", O_RDWR);
-    if (fd == -1) {
-        perror("Erro ao abrir /dev/mydev. Execute como root?");
-        return -1;
-    }
+int seg7_convert_digit(int n) {
+  int ret = 0;
+  switch (n) {  // segmentos estao na ordem 0gfedcba, sendo o 0 o ponto nao mapeado
+  case 1:
+    ret = 0b00000110;
+    break;
+  case 2:
+    ret = 0b01011011;
+    break;
+  case 3:
+    ret = 0b01001111;
+    break;
+  case 4:
+    ret = 0b01100110;
+    break;
+  case 5:
+    ret = 0b01101101;
+    break;
+  case 6:
+    ret = 0b01111101;
+    break;
+  case 7:
+    ret = 0b00000111;
+    break;
+  case 8:
+    ret = 0b01111111;
+    break;
+  case 9:
+    ret = 0b01100111;
+    break;
+  case 10: // A
+    ret = 0b01110111;
+    break;
+  case 11: // B
+    ret = 0b01111100;
+    break;
+  case 12: // C
+    ret = 0b00111001;
+    break;
+  case 13: // D
+    ret = 0b01011110;
+    break;
+  case 14: // E
+    ret = 0b01111001;
+    break;
+  case 15: // F
+    ret = 0b01110001;
+    break;
+  default:
+    ret = 0b00111111;
+    break;
+  }
+  return ret;
+}
 
-    printf("Pressione 'g' (Verde) ou 'r' (Vermelho) para os LEDs.\n");
-    printf("Pressione '0'-'9' para os displays de 7 segmentos.\n");
-    printf("Pressione os botoes na placa para ver o estado.\n");
-    printf("Pressione 'q' para sair.\n");
+void seg7_write_str(char *number) {
+  // identifica a base certa
+  int n = strtol(number, NULL, 0);
+  seg7_write(n);
+}
 
-    set_terminal_raw_mode();
+int BASE_S = 10;
 
-    char ch;
-    while (1) {
-        // Verifica se é hora de apagar os LEDs
-        if (led_is_on && get_current_time_ms() - led_on_time_ms >= 500) {
-            clear_leds();
-        }
+void seg7_write(int number) {
+  int digi_qtd = 0;
+  u_int64_t tmp = 0;
+  while (digi_qtd <= 7 && number != 0) {
+    tmp |= (u_int64_t)seg7_convert_digit(number % BASE_S) << (7 * (digi_qtd++));
+    number = number / BASE_S;
+  }
+  // usar mascara para pegar os 28 a direita e 28 a esquerda
+  current_R = (int32_t)(tmp & 0xFFFFFFF);
+  current_L = (int32_t)((tmp >> 28) & 0xFFFFFFF);
+  
+  int32_t b = ~current_R;
+  ioctl(file_d, WR_L_DISPLAY);
+  write(file_d, &b, sizeof(b));
+  b = ~current_L;
+  ioctl(file_d, WR_R_DISPLAY);
+  write(file_d, &b, sizeof(b));
+}
 
-        if (kbhit()) {
-            ch = getchar();
-            if (ch == 'q') {
-                break;
-            } else if (ch == 'g') {
-                set_leds(1);
-            } else if (ch == 'r') {
-                set_leds(0);
-            } else if (ch >= '0' && ch <= '9') {
-                set_display(ch - '0');
-            }
-        }
-        read_pbuttons();
-        usleep(50000); // 50ms de espera
-    }
-
-    restore_terminal_mode();
-    clear_leds();
-    close(fd);
-    printf("Programa de teste finalizado.\n");
-
-    return 0;
+void seg7_switch_base(int b) {
+  if (b != 0) {
+    BASE_S = b;
+  }
 }
