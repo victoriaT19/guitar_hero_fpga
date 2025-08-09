@@ -1,7 +1,8 @@
 #include "guitar_hero.h"
+#include "display.h"
+#include "ioctl_cmds.h"
 
 struct termios orig_termios;
-
 
 int main() {
     enableRawMode();
@@ -35,7 +36,6 @@ int main() {
     analyze_audio_to_file(audio_data, LEVEL_FILENAME);
 
     free_audio_data(audio_data);
-
 
     carregar_nivel(&game_state);
     inicializar_jogo(&game_state);
@@ -114,13 +114,6 @@ int main() {
     return 0;
 }
 
-/***********************************************
- *           IMPLEMENTAÇÕES DAS FUNÇÕES
- ***********************************************/
-
-/* (mantenha suas implementações originais; abaixo apenas acrescentei verificações
-   e a integração de fd_pbuttons quando necessário) */
-
 void init_terminal() {
     printf("\033[?25l");
     printf("\033[2J");
@@ -134,8 +127,6 @@ int init_joystick(GameState *state) {
     return joy_fd;
 }
 
-/* Inicializa leitura do char device que o seu driver cria (/dev/mydev)
-   Faz o ioctl RD_PBUTTONS para que o driver passe a ler os p-buttons */
 int init_pbuttons(GameState *state) {
     int fd = open("/dev/mydev", O_RDONLY | O_NONBLOCK);
     if (fd == -1) {
@@ -183,7 +174,6 @@ void inicializar_jogo(GameState *state) {
         state->level_notes[i].foi_pressionada = 0;
     }
 
-    /* inicializa descritores como -1 por padrão */
     state->joy_fd = -1;
     state->fd_pbuttons = -1;
 }
@@ -226,7 +216,7 @@ void carregar_nivel(GameState *state) {
 void process_input(GameState *state, double tempo_decorrido) {
     if (state->game_over || !state->musica_playing) return;
 
-    // 1) teclado
+    // 1) Teclado
     if (kbhit()) { 
         char ch = getchar();
         if (ch == 3) {
@@ -239,27 +229,28 @@ void process_input(GameState *state, double tempo_decorrido) {
         }
     }
     
-    2) joystick
+    // 2) Joystick
     if (state->joy_fd != -1) {
         check_joystick_input(state, tempo_decorrido);
     }
 
-    // 3) push-buttons da placa (lê um uint32_t do device)
+    // 3) Push-buttons da placa
     if (state->fd_pbuttons != -1) {
         uint32_t buttons = 0;
         ssize_t r = read(state->fd_pbuttons, &buttons, sizeof(buttons));
         if (r == sizeof(buttons)) {
-            // supondo que bit0 -> botão 1, bit1 -> botão 2, etc.
+            // Inverter a leitura pois os botões são ativos baixo
+            buttons = ~buttons & 0xF;
+            
+            // Mapear botões físicos para pistas do jogo
             for (int i = 0; i < 4; i++) {
                 if (buttons & (1u << i)) {
                     check_hits(state, i + 1, tempo_decorrido);
                 }
             }
         } else if (r == -1 && errno != EAGAIN && errno != EWOULDBLOCK) {
-            // erro real de leitura
             perror("Erro lendo /dev/mydev");
         }
-        // se EAGAIN/EWOULDBLOCK, não havia dados — ok (non-blocking)
     }
 }
 
@@ -283,13 +274,16 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
         
         if ((pista == pista_nota) && 
             (tempo_decorrido > timestamp_nota - 0.2 && tempo_decorrido < timestamp_nota + 0.2)) {
-            printf("\a");
+            printf("\a");  // Beep sonoro
             state->score += 10 * state->combo;
             state->combo++;
             state->consecutive_misses = 0;
             state->level_notes[i].foi_processada = 1;
             state->level_notes[i].foi_pressionada = 1;
             hit = 1;
+            
+            // Feedback visual - LED verde
+            flash_leds(state, 1);
             break;
         }
     }
@@ -297,6 +291,9 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
     if (!hit && pista != 0) {
         state->consecutive_misses++;
         state->combo = 1;
+        
+        // Feedback visual - LED vermelho
+        flash_leds(state, 0);
         
         if (state->consecutive_misses >= MAX_MISSES) {
             state->game_over = 1;
@@ -317,6 +314,9 @@ void update_game(GameState *state, double tempo_decorrido) {
                 state->consecutive_misses++;
                 state->combo = 1;
                 
+                // Feedback visual - LED vermelho por erro de tempo
+                flash_leds(state, 0);
+                
                 if (state->consecutive_misses >= MAX_MISSES) {
                     state->game_over = 1;
                     Mix_HaltMusic();
@@ -324,6 +324,83 @@ void update_game(GameState *state, double tempo_decorrido) {
                 }
             }
         }
+    }
+    
+    // Atualizar displays (pontuação e erros)
+    update_displays(state);
+}
+
+void flash_leds(GameState *state, int hit) {
+    static int fd_leds = -1;
+    
+    if (fd_leds == -1) {
+        fd_leds = open("/dev/mydev", O_WRONLY);
+        if (fd_leds == -1) {
+            perror("Falha ao abrir /dev/mydev para LEDs");
+            return;
+        }
+    }
+    
+    uint32_t leds_value;
+    
+    if (hit) {
+        // Acender todos LEDs verdes por 200ms ao acertar
+        leds_value = 0xFF;  // Todos os 8 LEDs verdes
+        ioctl(fd_leds, WR_GREEN_LEDS);
+        write(fd_leds, &leds_value, sizeof(leds_value));
+        
+        // Apagar LEDs vermelhos
+        leds_value = 0x00;
+        ioctl(fd_leds, WR_RED_LEDS);
+        write(fd_leds, &leds_value, sizeof(leds_value));
+    } else {
+        // Acender todos LEDs vermelhos por 200ms ao errar
+        leds_value = 0xFF;  // Todos os 8 LEDs vermelhos
+        ioctl(fd_leds, WR_RED_LEDS);
+        write(fd_leds, &leds_value, sizeof(leds_value));
+        
+        // Apagar LEDs verdes
+        leds_value = 0x00;
+        ioctl(fd_leds, WR_GREEN_LEDS);
+        write(fd_leds, &leds_value, sizeof(leds_value));
+    }
+    
+    // Agendar para apagar os LEDs após 200ms
+    SDL_Delay(200);
+    leds_value = 0x00;
+    ioctl(fd_leds, WR_GREEN_LEDS);
+    write(fd_leds, &leds_value, sizeof(leds_value));
+    ioctl(fd_leds, WR_RED_LEDS);
+    write(fd_leds, &leds_value, sizeof(leds_value));
+}
+
+void update_displays(GameState *state) {
+    static int fd_display = -1;
+    
+    if (fd_display == -1) {
+        fd_display = open("/dev/mydev", O_WRONLY);
+        if (fd_display == -1) {
+            perror("Falha ao abrir /dev/mydev para displays");
+            return;
+        }
+    }
+    
+    // Mostrar pontuação no display direito (formato XXX)
+    uint32_t right_display = 0;
+    int score = state->score;
+    right_display |= (HEX_0 + (score % 10)) << 16;        // Unidade
+    right_display |= (HEX_0 + ((score / 10) % 10)) << 8;  // Dezena
+    right_display |= (HEX_0 + (score / 100) % 10);        // Centena
+    
+    // Mostrar erros no display esquerdo (formato X)
+    uint32_t left_display = HEX_0 + state->consecutive_misses;
+    
+    if (ioctl(fd_display, WR_R_DISPLAY) == 0) {
+        write(fd_display, &right_display, sizeof(right_display));
+    }
+    
+    if (ioctl(fd_display, WR_L_DISPLAY) == 0) {
+        write(fd_display, &left_display, sizeof(left_display));
     }
 }
 
@@ -396,6 +473,27 @@ void finalizar_jogo(GameState *state) {
     if (state->musica_playing) {
         Mix_HaltMusic();
     }
+    
+    // Desligar LEDs e limpar displays
+    int fd = open("/dev/mydev", O_WRONLY);
+    if (fd != -1) {
+        // Apagar LEDs
+        uint32_t leds_off = 0x00;
+        ioctl(fd, WR_GREEN_LEDS);
+        write(fd, &leds_off, sizeof(leds_off));
+        ioctl(fd, WR_RED_LEDS);
+        write(fd, &leds_off, sizeof(leds_off));
+        
+        // Limpar displays
+        uint32_t display_off = HEX_0;
+        ioctl(fd, WR_L_DISPLAY);
+        write(fd, &display_off, sizeof(display_off));
+        ioctl(fd, WR_R_DISPLAY);
+        write(fd, &display_off, sizeof(display_off));
+        
+        close(fd);
+    }
+    
     printf("\nFim de jogo! Pontuação Final: %d\n", state->score);
     if (state->joy_fd != -1) close(state->joy_fd);
     if (state->fd_pbuttons != -1) close(state->fd_pbuttons);
