@@ -8,4 +8,13 @@ Para executar a aplicacao do guitar hero:
 gcc src/guitar_hero_aplicacao.c -o jogo -lSDL2 -lSDL2_mixer
 
 Executar:
+
 ./jogo
+
+aplay -l
+arecord -l
+cat /proc/asound/cards
+lsmod | grep snd
+dmesg | grep -i snd | tail -40
+pactl list short sinks
+pactl info
