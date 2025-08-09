@@ -21,3 +21,71 @@ pactl info
 
 speaker-test -Dhw:0,3 -c2 -t wav
 
+
+speaker-test 1.2.6
+
+Dispositivo de reprodução é hw:0,3
+Parâmetros do stream são 48000Hz, S16_LE, 2 canais
+Arquivo(s) WAV
+Taxa alterada para 48000Hz (requisitada 48000Hz)
+Tamanho do buffer tem um intervalo de 64 à 1048576
+Tamanho do período tem um intervalo de 32 à 524288
+Usando tamanho máximo de buffer 1048576
+Períodos = 4
+period_size definido = 262144
+buffer_size definido = 1048576
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,965553
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953674
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953629
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953666
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,951773
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953746
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953727
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953884
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953760
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953976
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,954221
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,954029
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,954131
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,954656
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,956961
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,953948
+ 0 - Unknown
+ 1 - Unknown
+Tempo por peíodo = 10,954372
+ 0 - Unknown
+ 1 - Unknown
+^CTempo por peíodo = 8,147216
+
