@@ -89,3 +89,5 @@ Tempo por peíodo = 10,954372
  1 - Unknown
 ^CTempo por peíodo = 8,147216
 
+speaker-test -Dhw:0,0 -c2 -t wav
+
