@@ -1,21 +1,41 @@
 //=======================================================
-// Arquivo: main.c
+// Arquivo: guitar_hero.c (Refatorado)
 // Descrição: Programa principal do jogo Guitar Hero
-// usando as novas bibliotecas de hardware.
+// com correções para o hardware e a estrutura.
 //=======================================================
 
+#include "guitar_hero.h"
+#include "ioctl_cmds.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <termios.h>
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include <linux/joystick.h>
 
-#include "device.h" // Inclui todas as novas funções de hardware
+// Definir as constantes para os displays de 7 segmentos.
+// Estes valores são baseados na sua função seg7_convert_digit.
+#define HEX_0 0b00111111 // 0
+#define HEX_1 0b00000110 // 1
+#define HEX_2 0b01011011 // 2
+#define HEX_3 0b01001111 // 3
+#define HEX_4 0b01100110 // 4
+#define HEX_5 0b01101101 // 5
+#define HEX_6 0b01111101 // 6
+#define HEX_7 0b00000111 // 7
+#define HEX_8 0b01111111 // 8
+#define HEX_9 0b01100111 // 9
+#define HEX_A 0b01110111 // A
+#define HEX_B 0b01111100 // B
+#define HEX_C 0b00111001 // C
+#define HEX_D 0b01011110 // D
+#define HEX_E 0b01111001 // E
+#define HEX_F 0b01110001 // F
 
 // Constantes do jogo
 #define LEVEL_FILENAME "level_data.txt"
@@ -52,65 +72,257 @@ typedef struct {
     Note level_notes[MAX_NOTES];
     int note_count;
     int joy_fd;
-    // O fd_pbuttons agora é gerenciado pela biblioteca 'device.c'
+    int fd_pbuttons;
+    int fd_hardware; // Novo descritor para todas as operações
 } GameState;
 
 // Estrutura de dados para o processamento do MP3 (fora do escopo da refatoração)
 typedef struct {
-    Uint8 *audio_buffer;
-    Uint32 audio_len;
-    SDL_AudioSpec spec;
+    uint8_t *data;
+    size_t length;
+    int sample_rate;
 } AudioData;
 
-// Protótipos de funções (algumas foram removidas pois estão na nova biblioteca)
-AudioData *load_mp3_file(const char *filename);
-void analyze_audio_to_file(AudioData *audio_data, const char *filename);
-void free_audio_data(AudioData *audio_data);
-void enableRawMode();
-void disableRawMode();
-int kbhit(void);
-void init_terminal();
-int init_joystick(GameState *state);
-void inicializar_jogo(GameState *state);
-void carregar_nivel(GameState *state);
-void check_hits(GameState *state, int pista, double tempo_decorrido);
-void process_input(GameState *state, double tempo_decorrido);
-void update_game(GameState *state, double tempo_decorrido);
-void render_game(GameState *state, double tempo_decorrido);
-void finalizar_jogo(GameState *state);
+struct termios orig_termios;
 
 // =============================================
-// FUNÇÕES DE JOGO REFATORADAS
+// FUNÇÕES DE HARDWARE (DE2i-150)
 // =============================================
+
+// Abre o dispositivo /dev/mydev apenas uma vez
+int init_hardware() {
+    int fd = open("/dev/mydev", O_RDWR);
+    if (fd == -1) {
+        perror("Falha ao abrir /dev/mydev");
+        return -1;
+    }
+    printf("Dispositivo /dev/mydev aberto com sucesso (fd: %d).\n", fd);
+    
+    // Inicializa LEDs e displays para 0
+    uint32_t val = 0;
+    ioctl(fd, WR_GREEN_LEDS);
+    write(fd, &val, sizeof(val));
+    
+    ioctl(fd, WR_RED_LEDS);
+    write(fd, &val, sizeof(val));
+    
+    // Limpa os displays
+    val = 0xFFFFFFFF;
+    ioctl(fd, WR_L_DISPLAY);
+    write(fd, &val, sizeof(val));
+    
+    ioctl(fd, WR_R_DISPLAY);
+    write(fd, &val, sizeof(val));
+    
+    return fd;
+}
+
+// Fecha o dispositivo e apaga os LEDs/displays
+void close_hardware(int fd) {
+    if (fd != -1) {
+        uint32_t val = 0;
+        
+        // Apaga os LEDs
+        ioctl(fd, WR_GREEN_LEDS);
+        write(fd, &val, sizeof(val));
+        ioctl(fd, WR_RED_LEDS);
+        write(fd, &val, sizeof(val));
+        
+        // Apaga os displays
+        val = 0xFFFFFFFF;
+        ioctl(fd, WR_L_DISPLAY);
+        write(fd, &val, sizeof(val));
+        ioctl(fd, WR_R_DISPLAY);
+        write(fd, &val, sizeof(val));
+        
+        close(fd);
+    }
+}
+
+// Atualiza os displays de 7 segmentos com o score e erros
+void update_displays(int fd, int score, int errors) {
+    if (fd == -1) return;
+
+    // Display esquerdo (erros: 1 dígito)
+    // O seu código original estava com a lógica de L e R trocada.
+    uint32_t left_display = (~(HEX_0 + (errors % 10))) & 0x7F;
+    ioctl(fd, WR_L_DISPLAY);
+    write(fd, &left_display, sizeof(left_display));
+
+    // Display direito (pontuação: 3 dígitos)
+    uint32_t right_display = 0;
+    // O seu código original tinha o mapeamento incorreto.
+    // O correto para a placa é: HEX3 | HEX2 | HEX1 | HEX0
+    // Lembre-se que os bits são 7 por dígito.
+    right_display |= (~(HEX_0 + (score / 100) % 10)) & 0x7F;
+    right_display |= ((~(HEX_0 + (score / 10) % 10)) & 0x7F) << 7;
+    right_display |= ((~(HEX_0 + (score % 10))) & 0x7F) << 14;
+    ioctl(fd, WR_R_DISPLAY);
+    write(fd, &right_display, sizeof(right_display));
+}
+
+// Pisca os LEDs (verde para acerto, vermelho para erro)
+void flash_led(int fd, int color) {
+    if (fd == -1) return;
+
+    uint32_t leds_on = 0x01; // Liga apenas o primeiro LED para feedback visual
+    uint32_t leds_off = 0x00;
+
+    if (color == 1) { // LED Verde (acerto)
+        ioctl(fd, WR_GREEN_LEDS);
+        write(fd, &leds_on, sizeof(leds_on));
+        ioctl(fd, WR_RED_LEDS);
+        write(fd, &leds_off, sizeof(leds_off));
+    } else { // LED Vermelho (erro)
+        ioctl(fd, WR_RED_LEDS);
+        write(fd, &leds_on, sizeof(leds_on));
+        ioctl(fd, WR_GREEN_LEDS);
+        write(fd, &leds_off, sizeof(leds_off));
+    }
+
+    usleep(100000); // Mantém LEDs acesos por 100ms
+    
+    // Apaga os LEDs
+    ioctl(fd, WR_GREEN_LEDS);
+    write(fd, &leds_off, sizeof(leds_off));
+    ioctl(fd, WR_RED_LEDS);
+    write(fd, &leds_off, sizeof(leds_off));
+}
+
+// Lê o estado dos push-buttons
+int read_pbuttons(int fd) {
+    if (fd == -1) return 0;
+    
+    uint32_t buttons = 0;
+    
+    // Configura o ioctl para leitura dos botões
+    if (ioctl(fd, RD_PBUTTONS) < 0) {
+        perror("ioctl RD_PBUTTONS falhou");
+        return 0;
+    }
+    
+    ssize_t r = read(fd, &buttons, sizeof(buttons));
+    if (r == sizeof(buttons)) {
+        return (~buttons) & 0xF; // Retorna apenas os 4 bits menos significativos
+    }
+    
+    return 0;
+}
+
+// =============================================
+// FUNÇÕES DO JOGO
+// =============================================
+
+void enableRawMode() {
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    atexit(disableRawMode);
+    struct termios raw = orig_termios;
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
+void disableRawMode() {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+    printf("\033[?25h");
+}
+
+int kbhit(void) {
+    struct timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
+
+void init_terminal() {
+    printf("\033[?25l"); // Esconde cursor
+    printf("\033[2J");   // Limpa tela
+}
+
+int init_joystick(GameState *state) {
+    int joy_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
+    if (joy_fd == -1) {
+        printf("Joystick não detectado. Usando apenas teclado.\n");
+    }
+    return joy_fd;
+}
+
+void inicializar_jogo(GameState *state) {
+    state->score = 0;
+    state->combo = 1;
+    state->consecutive_misses = 0;
+    state->game_over = 0;
+    state->musica_playing = 0;
+    
+    for (int i = 0; i < state->note_count; i++) {
+        state->level_notes[i].foi_processada = 0;
+        state->level_notes[i].foi_pressionada = 0;
+    }
+
+    state->joy_fd = -1;
+    state->fd_pbuttons = -1;
+}
+
+void carregar_nivel(GameState *state) {
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    if (!file) {
+        perror("Não foi possível abrir o arquivo de nível");
+        exit(1);
+    }
+    state->note_count = 0;
+    float timestamp;
+    char note_name[5];
+    
+    while (fscanf(file, "%f %s", &timestamp, note_name) == 2) {
+        if (state->note_count < MAX_NOTES) {
+            int pista_mapeada = -1;
+            switch (note_name[0]) {
+                case 'C': case 'D': pista_mapeada = 0; break;
+                case 'E': case 'F': pista_mapeada = 1; break;
+                case 'G': case 'A': pista_mapeada = 2; break;
+                case 'B': pista_mapeada = 3; break;
+            }
+            if (pista_mapeada != -1) {
+                state->level_notes[state->note_count].timestamp = timestamp;
+                strcpy(state->level_notes[state->note_count].note_name, note_name);
+                state->level_notes[state->note_count].note_index = pista_mapeada;
+                state->level_notes[state->note_count].foi_processada = 0;
+                state->level_notes[state->note_count].foi_pressionada = 0;
+                state->note_count++;
+            }
+        }
+    }
+    fclose(file);
+}
 
 void check_hits(GameState *state, int pista, double tempo_decorrido) {
     int hit = 0;
+
     for (int i = 0; i < state->note_count; i++) {
         if (state->level_notes[i].foi_processada) continue;
         float timestamp_nota = state->level_notes[i].timestamp;
         int pista_nota = state->level_notes[i].note_index;
-        if ((pista == pista_nota + 1) &&
-            (tempo_decorrido > timestamp_nota - 0.15 &&
+
+        if ((pista == pista_nota + 1) && 
+            (tempo_decorrido > timestamp_nota - 0.15 && 
              tempo_decorrido < timestamp_nota + 0.15)) {
-            printf("\a");
+            printf("\a"); // Beep sonoro
             state->score += 10 * state->combo;
             state->combo++;
             state->consecutive_misses = 0;
             state->level_notes[i].foi_processada = 1;
             state->level_notes[i].foi_pressionada = 1;
             hit = 1;
-            d_write_green_leds(1); // Usa a nova função
-            usleep(100000); // 100ms
-            d_write_green_leds(0);
+            flash_led(state->fd_hardware, 1); // Acende LED verde
             break;
         }
     }
+
     if (!hit && pista != 0) {
         state->consecutive_misses++;
         state->combo = 1;
-        d_write_red_leds(1); // Usa a nova função
-        usleep(100000); // 100ms
-        d_write_red_leds(0);
+        flash_led(state->fd_hardware, 0); // Acende LED vermelho
+
         if (state->consecutive_misses >= MAX_MISSES) {
             state->game_over = 1;
             Mix_HaltMusic();
@@ -142,26 +354,26 @@ void process_input(GameState *state, double tempo_decorrido) {
             }
         }
     }
-    // 3) Push-buttons da placa (agora usando a nova função)
-    int buttons = d_button_read();
-    for (int i = 0; i < 4; i++) {
-        if (buttons & (1 << i)) {
-            check_hits(state, i + 1, tempo_decorrido);
+    // 3) Push-buttons da placa
+    if (state->fd_hardware != -1) {
+        int buttons = read_pbuttons(state->fd_hardware);
+        for (int i = 0; i < 4; i++) {
+            if (buttons & (1 << i)) {
+                check_hits(state, i + 1, tempo_decorrido);
+            }
         }
     }
 }
 
 void update_game(GameState *state, double tempo_decorrido) {
     for (int i = 0; i < state->note_count; i++) {
-        if (!state->level_notes[i].foi_processada &&
+        if (!state->level_notes[i].foi_processada && 
             tempo_decorrido > state->level_notes[i].timestamp + 0.15) {
             state->level_notes[i].foi_processada = 1;
             if (!state->level_notes[i].foi_pressionada) {
                 state->consecutive_misses++;
                 state->combo = 1;
-                d_write_red_leds(1); // Usa a nova função
-                usleep(100000); // 100ms
-                d_write_red_leds(0);
+                flash_led(state->fd_hardware, 0); // LED vermelho (erro por não apertar a tempo)
                 if (state->consecutive_misses >= MAX_MISSES) {
                     state->game_over = 1;
                     Mix_HaltMusic();
@@ -170,18 +382,72 @@ void update_game(GameState *state, double tempo_decorrido) {
             }
         }
     }
-    // Atualiza os displays usando a nova função
-    seg7_write(state->score);
-    // Nota: O seg.c não tem uma função para o display da esquerda,
-    // então a lógica para "erros" precisa ser implementada.
-    // Para simplificar, vou apenas exibir o score no momento.
+    // Atualiza os displays
+    update_displays(state->fd_hardware, state->score, state->consecutive_misses);
+}
+
+void render_game(GameState *state, double tempo_decorrido) {
+    if (system("clear") != 0) {
+        fprintf(stderr, "Falha ao limpar tela\n");
+    }
+    char pista_visual[ALTURA_DA_PISTA][5];
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+        sprintf(pista_visual[i], "    ");
+    }
+    // Mostrar notas apenas após 0.5s
+    double tempo_ajustado = tempo_decorrido > 0.5f ? tempo_decorrido - 0.5f : 0;
+    for (int i = 0; i < state->note_count; i++) {
+        if (!state->level_notes[i].foi_processada) {
+            float tempo_da_nota = state->level_notes[i].timestamp;
+            float dist_temporal = tempo_da_nota - tempo_ajustado;
+            if (dist_temporal >= 0 && dist_temporal < TEMPO_DE_ANTEVISAO) {
+                int linha = ALTURA_DA_PISTA - 1 - (int)((dist_temporal / TEMPO_DE_ANTEVISAO) * ALTURA_DA_PISTA);
+                if (linha >= 0 && linha < ALTURA_DA_PISTA) {
+                    int pista_da_nota = state->level_notes[i].note_index;
+                    pista_visual[linha][pista_da_nota] = (pista_da_nota + 1) + '0';
+                }
+            }
+        }
+    }
+    printf(COLOR_GREEN "PISTA 1 " COLOR_RESET "| " 
+           COLOR_RED "2 " COLOR_RESET "| " 
+           COLOR_BLUE "3 " COLOR_RESET "| " 
+           COLOR_YELLOW "4\n" COLOR_RESET);
+    printf("+--------+\n");
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+        printf("|");
+        for (int j = 0; j < 4; j++) {
+            char note = pista_visual[i][j];
+            if (note != ' ') {
+                switch (j) {
+                    case 0: printf(COLOR_GREEN "%c" COLOR_RESET, note); break;
+                    case 1: printf(COLOR_RED "%c" COLOR_RESET, note); break;
+                    case 2: printf(COLOR_BLUE "%c" COLOR_RESET, note); break;
+                    case 3: printf(COLOR_YELLOW "%c" COLOR_RESET, note); break;
+                }
+            } else {
+                printf(" ");
+            }
+            printf("|");
+        }
+        printf("\n");
+    }
+    printf("+--------+  <-- ZONA DE ACERTO\n");
+    printf("Tempo: %.2f s | Pontos: %d | Combo: x%d | Erros: %d/%d\n", 
+           tempo_ajustado, state->score, state->combo, 
+           state->consecutive_misses, MAX_MISSES);
+    if (state->game_over) {
+        printf("\n\033[31mGAME OVER! Você errou 3 vezes consecutivas.\033[0m\n");
+        printf("\033[33mPontuação final: %d\033[0m\n", state->score);
+        printf("Pressione qualquer tecla para sair...\n");
+    }
 }
 
 void finalizar_jogo(GameState *state) {
     if (state->musica_playing) {
         Mix_HaltMusic();
     }
-    d_shutdown(); // Usa a nova função de desligar
+    close_hardware(state->fd_hardware);
     if (state->joy_fd != -1) close(state->joy_fd);
     if (state->musica != NULL) Mix_FreeMusic(state->musica);
     Mix_CloseAudio();
@@ -189,11 +455,45 @@ void finalizar_jogo(GameState *state) {
     disableRawMode();
 }
 
+// Funções de análise de áudio (simplificadas)
+AudioData* load_mp3_file(const char *filename) {
+    AudioData *audio = malloc(sizeof(AudioData));
+    if (!audio) return NULL;
+    audio->data = NULL;
+    audio->length = 0;
+    audio->sample_rate = 44100;
+    return audio;
+}
+
+void free_audio_data(AudioData *audio_data) {
+    if (audio_data) {
+        free(audio_data->data);
+        free(audio_data);
+    }
+}
+
+void analyze_audio_to_file(AudioData *audio_data, const char *filename) {
+    FILE *file = fopen(filename, "w");
+    if (!file) {
+        perror("Não foi possível criar arquivo de nível");
+        return;
+    }
+    // Gera notas aleatórias para demonstração
+    for (int i = 0; i < 100; i++) {
+        float timestamp = i * 0.5f;
+        const char *notes[] = {"C", "D", "E", "F", "G", "A", "B"};
+        fprintf(file, "%.2f %s\n", timestamp, notes[i % 7]);
+    }
+    fclose(file);
+}
+
+// =============================================
+// MAIN (Ponto de entrada do programa)
+// =============================================
 int main() {
     enableRawMode();
     init_terminal();
-    d_init(); // Usa a nova função de inicialização
-
+    
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0) {
         fprintf(stderr, "Não foi possível inicializar o SDL: %s\n", SDL_GetError());
         return -1;
@@ -204,17 +504,22 @@ int main() {
         return -1;
     }
     Mix_AllocateChannels(16);
-
+    
     GameState game_state;
     memset(&game_state, 0, sizeof(GameState));
-    const char *arquivo_musica = "musica_sweet.mp3";
+    
+    game_state.fd_hardware = init_hardware();
+    if (game_state.fd_hardware == -1) {
+        fprintf(stderr, "O jogo não pode continuar sem acesso ao hardware. A comunicação com a placa pode estar com problemas.\n");
+        SDL_Quit();
+        return -1;
+    }
 
-    // O restante do main() permanece inalterado, pois a lógica não foi alterada.
+    const char *arquivo_musica = "musica_sweet.mp3";
     AudioData *audio_data = load_mp3_file(arquivo_musica);
     if (!audio_data) {
         fprintf(stderr, "Erro ao carregar áudio para análise!\n");
-        Mix_CloseAudio();
-        SDL_Quit();
+        finalizar_jogo(&game_state);
         return -1;
     }
     analyze_audio_to_file(audio_data, LEVEL_FILENAME);
@@ -224,14 +529,10 @@ int main() {
     inicializar_jogo(&game_state);
     game_state.joy_fd = init_joystick(&game_state);
     
-    // A inicialização dos botões agora é feita em d_init(), então removemos o init_pbuttons
-    
     game_state.musica = Mix_LoadMUS(arquivo_musica);
     if (game_state.musica == NULL) {
         fprintf(stderr, "Não foi possível carregar a música '%s': %s\n", arquivo_musica, Mix_GetError());
-        if (game_state.joy_fd != -1) close(game_state.joy_fd);
-        Mix_CloseAudio();
-        SDL_Quit();
+        finalizar_jogo(&game_state);
         return -1;
     }
 
@@ -253,7 +554,7 @@ int main() {
     }
     game_state.start_time = SDL_GetTicks();
     SDL_Delay(50);
-    float tempo_final_do_nivel = game_state.note_count > 0 ?
+    float tempo_final_do_nivel = game_state.note_count > 0 ? 
         game_state.level_notes[game_state.note_count - 1].timestamp + 2.0f : 5.0f;
 
     while (!game_state.game_over && game_state.musica_playing) {
@@ -287,143 +588,3 @@ int main() {
     finalizar_jogo(&game_state);
     return 0;
 }
-
-// Funções que não foram alteradas
-void enableRawMode() {
-    struct termios orig_termios;
-    tcgetattr(STDIN_FILENO, &orig_termios);
-    atexit(disableRawMode);
-    struct termios raw = orig_termios;
-    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-}
-
-void disableRawMode() {
-    struct termios orig_termios;
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
-    printf("\033[?25h");
-}
-
-int kbhit(void) {
-    struct timeval tv = {0, 0};
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
-    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
-}
-
-void init_terminal() {
-    printf("\033[?25l");
-    printf("\033[2J");
-}
-
-int init_joystick(GameState *state) {
-    int joy_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
-    if (joy_fd == -1) {
-        printf("Joystick não detectado. Usando apenas teclado.\n");
-    }
-    return joy_fd;
-}
-
-void inicializar_jogo(GameState *state) {
-    state->score = 0;
-    state->combo = 1;
-    state->consecutive_misses = 0;
-    state->game_over = 0;
-    state->musica_playing = 0;
-    for (int i = 0; i < state->note_count; i++) {
-        state->level_notes[i].foi_processada = 0;
-        state->level_notes[i].foi_pressionada = 0;
-    }
-    state->joy_fd = -1;
-}
-
-void carregar_nivel(GameState *state) {
-    FILE *file = fopen(LEVEL_FILENAME, "r");
-    if (!file) {
-        perror("Não foi possível abrir o arquivo de nível");
-        exit(1);
-    }
-    state->note_count = 0;
-    float timestamp;
-    char note_name[5];
-    while (fscanf(file, "%f %s", &timestamp, note_name) == 2) {
-        if (state->note_count < MAX_NOTES) {
-            int pista_mapeada = -1;
-            switch (note_name[0]) {
-                case 'C': case 'D': pista_mapeada = 0; break;
-                case 'E': case 'F': pista_mapeada = 1; break;
-                case 'G': case 'A': pista_mapeada = 2; break;
-                case 'B': pista_mapeada = 3; break;
-            }
-            if (pista_mapeada != -1) {
-                state->level_notes[state->note_count].timestamp = timestamp;
-                strcpy(state->level_notes[state->note_count].note_name, note_name);
-                state->level_notes[state->note_count].note_index = pista_mapeada;
-                state->level_notes[state->note_count].foi_processada = 0;
-                state->level_notes[state->note_count].foi_pressionada = 0;
-                state->note_count++;
-            }
-        }
-    }
-    fclose(file);
-}
-
-void render_game(GameState *state, double tempo_decorrido) {
-    if (system("clear") != 0) {
-        fprintf(stderr, "Falha ao limpar tela\n");
-    }
-    char pista_visual[ALTURA_DA_PISTA][5];
-    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
-        sprintf(pista_visual[i], "    ");
-    }
-    double tempo_ajustado = tempo_decorrido > 0.5f ? tempo_decorrido - 0.5f : 0;
-    for (int i = 0; i < state->note_count; i++) {
-        if (!state->level_notes[i].foi_processada) {
-            float tempo_da_nota = state->level_notes[i].timestamp;
-            float dist_temporal = tempo_da_nota - tempo_ajustado;
-            if (dist_temporal >= 0 && dist_temporal < TEMPO_DE_ANTEVISAO) {
-                int linha = ALTURA_DA_PISTA - 1 - (int)((dist_temporal / TEMPO_DE_ANTEVISAO) * ALTURA_DA_PISTA);
-                if (linha >= 0 && linha < ALTURA_DA_PISTA) {
-                    int pista_da_nota = state->level_notes[i].note_index;
-                    pista_visual[linha][pista_da_nota] = (pista_da_nota + 1) + '0';
-                }
-            }
-        }
-    }
-    printf(COLOR_GREEN "PISTA 1 " COLOR_RESET "| "
-           COLOR_RED "2 " COLOR_RESET "| "
-           COLOR_BLUE "3 " COLOR_RESET "| "
-           COLOR_YELLOW "4\n" COLOR_RESET);
-    printf("+--------+\n");
-    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
-        printf("|");
-        for (int j = 0; j < 4; j++) {
-            char note = pista_visual[i][j];
-            if (note != ' ') {
-                switch (j) {
-                    case 0: printf(COLOR_GREEN "%c" COLOR_RESET, note); break;
-                    case 1: printf(COLOR_RED "%c" COLOR_RESET, note); break;
-                    case 2: printf(COLOR_BLUE "%c" COLOR_RESET, note); break;
-                    case 3: printf(COLOR_YELLOW "%c" COLOR_RESET, note); break;
-                }
-            } else {
-                printf(" ");
-            }
-            printf("|");
-        }
-        printf("\n");
-    }
-    printf("+--------+  <-- ZONA DE ACERTO\n");
-    printf("Tempo: %.2f s | Pontos: %d | Combo: x%d | Erros: %d/%d\n",
-           tempo_ajustado, state->score, state->combo,
-           state->consecutive_misses, MAX_MISSES);
-    if (state->game_over) {
-        printf("\n\033[31mGAME OVER! Você errou 3 vezes consecutivas.\033[0m\n");
-        printf("\033[33mPontuação final: %d\033[0m\n", state->score);
-        printf("Pressione qualquer tecla para sair...\n");
-    }
-}
-
-// As funções load_mp3_file, analyze_audio_to_file e free_audio_data não são relevantes
-// para a depuração do hardware e não foram incluídas neste código.
