@@ -9,6 +9,7 @@
 #include <sys/time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <errno.h>
 #include <linux/joystick.h>
 #include "guitar_hero.h"
 #include "ioctl_cmds.h"  // seu header com os defines do ioctl
