@@ -59,13 +59,7 @@ int main() {
         return -1;
     }
 
-    if (analyze_audio_to_file(audio_data, LEVEL_FILENAME) != 0) {
-        fprintf(stderr, "Erro ao gerar arquivo de notas '%s'\n", LEVEL_FILENAME);
-        free_audio_data(audio_data);
-        Mix_CloseAudio();
-        SDL_Quit();
-        return -1;
-    }
+    analyze_audio_to_file(audio_data, LEVEL_FILENAME)
 
     free_audio_data(audio_data);
     
