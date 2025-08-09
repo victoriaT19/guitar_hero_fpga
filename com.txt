@@ -1,0 +1,62 @@
+aplay -l
+arecord -l
+cat /proc/asound/cards
+lsmod | grep snd
+dmesg | grep -i snd | tail -40
+pactl list short sinks
+pactl info
+**** Lista de Dispositivos PLAYBACK Hardware ****
+placa 0: Intel [HDA Intel], dispositivo 0: ALC272 Analog [ALC272 Analog]
+  Dispositivo secundário: 1/1
+  Dispositivo secundário #0: subdevice #0
+placa 0: Intel [HDA Intel], dispositivo 3: HDMI 0 [HDMI 0]
+  Dispositivo secundário: 1/1
+  Dispositivo secundário #0: subdevice #0
+placa 0: Intel [HDA Intel], dispositivo 7: ALC272 Digital [ALC272 Digital]
+  Dispositivo secundário: 1/1
+  Dispositivo secundário #0: subdevice #0
+**** Lista de Dispositivos CAPTURE Hardware ****
+placa 0: Intel [HDA Intel], dispositivo 0: ALC272 Analog [ALC272 Analog]
+  Dispositivo secundário: 1/1
+  Dispositivo secundário #0: subdevice #0
+placa 0: Intel [HDA Intel], dispositivo 2: ALC272 Alt Analog [ALC272 Alt Analog]
+  Dispositivo secundário: 1/1
+  Dispositivo secundário #0: subdevice #0
+ 0 [Intel          ]: HDA-Intel - HDA Intel
+                      HDA Intel at 0x80400000 irq 27
+snd_hda_codec_realtek   192512  1
+snd_hda_codec_generic   122880  1 snd_hda_codec_realtek
+ledtrig_audio          12288  1 snd_hda_codec_generic
+snd_hda_codec_hdmi     94208  1
+snd_hda_intel          61440  2
+snd_intel_dspcfg       32768  1 snd_hda_intel
+snd_intel_sdw_acpi     16384  1 snd_intel_dspcfg
+snd_hda_codec         212992  4 snd_hda_codec_generic,snd_hda_codec_hdmi,snd_hda_intel,snd_hda_codec_realtek
+snd_hda_core          147456  5 snd_hda_codec_generic,snd_hda_codec_hdmi,snd_hda_intel,snd_hda_codec,snd_hda_codec_realtek
+snd_hwdep              20480  1 snd_hda_codec
+snd_pcm               196608  4 snd_hda_codec_hdmi,snd_hda_intel,snd_hda_codec,snd_hda_core
+snd_seq_midi           24576  0
+snd_seq_midi_event     16384  1 snd_seq_midi
+snd_rawmidi            57344  1 snd_seq_midi
+snd_seq               118784  2 snd_seq_midi,snd_seq_midi_event
+snd_seq_device         16384  3 snd_seq,snd_seq_midi,snd_rawmidi
+snd_timer              49152  2 snd_seq,snd_pcm
+snd                   143360  15 snd_hda_codec_generic,snd_seq,snd_seq_device,snd_hda_codec_hdmi,snd_hwdep,snd_hda_intel,snd_hda_codec,snd_hda_codec_realtek,snd_timer,snd_pcm,snd_rawmidi
+soundcore              16384  1 snd
+dmesg: leitura de buffer de kernel falhou: Operação não permitida
+0       alsa_output.pci-0000_00_1b.0.hdmi-stereo-extra1 module-alsa-card.c      s16le 2ch 44100Hz       SUSPENDED
+String do servidor: /run/user/1000/pulse/native
+Versão do protocolo da biblioteca: 35
+Versão do protocolo do servidor: 35
+É local: sim
+Índice do cliente: 16
+Tamanho de fragmento: 65472
+Nome do usuário: de2i150
+Nome da máquina: de2i150-cedartrailclientplatform
+Nome do servidor: pulseaudio
+Versão do servidor: 15.99.1
+Especificação padrão de amostragem: s16le 2ch 44100Hz
+Mapa de canais padrão: front-left,front-right
+Destino padrão: alsa_output.pci-0000_00_1b.0.hdmi-stereo-extra1
+Fonte padrão: alsa_output.pci-0000_00_1b.0.hdmi-stereo-extra1.monitor
+Cookie: fe6c:7603
