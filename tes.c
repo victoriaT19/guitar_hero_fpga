@@ -85,9 +85,43 @@ typedef struct {
 
 struct termios orig_termios;
 
-// =============================================
+//==============================================
+// FUNÇÕES DO JOGO (TERMINAL)
+//==============================================
+
+// Restaura as configurações originais do terminal
+void disableRawMode() {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+    printf("\033[?25h"); // Mostra o cursor novamente
+}
+
+// Habilita o modo "raw" para leitura de teclas instantânea
+void enableRawMode() {
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    atexit(disableRawMode);
+    struct termios raw = orig_termios;
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
+// Verifica se uma tecla foi pressionada
+int kbhit(void) {
+    struct timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
+
+// Inicializa o terminal para o jogo
+void init_terminal() {
+    printf("\033[?25l"); // Esconde cursor
+    printf("\033[2J");   // Limpa tela
+}
+
+//==============================================
 // FUNÇÕES DE HARDWARE (DE2i-150)
-// =============================================
+//==============================================
 
 // Abre o dispositivo /dev/mydev apenas uma vez
 int init_hardware() {
@@ -144,16 +178,12 @@ void update_displays(int fd, int score, int errors) {
     if (fd == -1) return;
 
     // Display esquerdo (erros: 1 dígito)
-    // O seu código original estava com a lógica de L e R trocada.
     uint32_t left_display = (~(HEX_0 + (errors % 10))) & 0x7F;
     ioctl(fd, WR_L_DISPLAY);
     write(fd, &left_display, sizeof(left_display));
 
     // Display direito (pontuação: 3 dígitos)
     uint32_t right_display = 0;
-    // O seu código original tinha o mapeamento incorreto.
-    // O correto para a placa é: HEX3 | HEX2 | HEX1 | HEX0
-    // Lembre-se que os bits são 7 por dígito.
     right_display |= (~(HEX_0 + (score / 100) % 10)) & 0x7F;
     right_display |= ((~(HEX_0 + (score / 10) % 10)) & 0x7F) << 7;
     right_display |= ((~(HEX_0 + (score % 10))) & 0x7F) << 14;
@@ -195,7 +225,6 @@ int read_pbuttons(int fd) {
     
     uint32_t buttons = 0;
     
-    // Configura o ioctl para leitura dos botões
     if (ioctl(fd, RD_PBUTTONS) < 0) {
         perror("ioctl RD_PBUTTONS falhou");
         return 0;
@@ -203,41 +232,15 @@ int read_pbuttons(int fd) {
     
     ssize_t r = read(fd, &buttons, sizeof(buttons));
     if (r == sizeof(buttons)) {
-        return (~buttons) & 0xF; // Retorna apenas os 4 bits menos significativos
+        return (~buttons) & 0xF;
     }
     
     return 0;
 }
 
-// =============================================
-// FUNÇÕES DO JOGO
-// =============================================
-
-void enableRawMode() {
-    tcgetattr(STDIN_FILENO, &orig_termios);
-    atexit(disableRawMode);
-    struct termios raw = orig_termios;
-    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
-}
-
-void disableRawMode() {
-    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
-    printf("\033[?25h");
-}
-
-int kbhit(void) {
-    struct timeval tv = {0, 0};
-    fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(STDIN_FILENO, &fds);
-    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
-}
-
-void init_terminal() {
-    printf("\033[?25l"); // Esconde cursor
-    printf("\033[2J");   // Limpa tela
-}
+//==============================================
+// FUNÇÕES DO JOGO (LÓGICA)
+//==============================================
 
 int init_joystick(GameState *state) {
     int joy_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
@@ -382,7 +385,6 @@ void update_game(GameState *state, double tempo_decorrido) {
             }
         }
     }
-    // Atualiza os displays
     update_displays(state->fd_hardware, state->score, state->consecutive_misses);
 }
 
@@ -394,7 +396,6 @@ void render_game(GameState *state, double tempo_decorrido) {
     for (int i = 0; i < ALTURA_DA_PISTA; i++) {
         sprintf(pista_visual[i], "    ");
     }
-    // Mostrar notas apenas após 0.5s
     double tempo_ajustado = tempo_decorrido > 0.5f ? tempo_decorrido - 0.5f : 0;
     for (int i = 0; i < state->note_count; i++) {
         if (!state->level_notes[i].foi_processada) {
@@ -478,7 +479,6 @@ void analyze_audio_to_file(AudioData *audio_data, const char *filename) {
         perror("Não foi possível criar arquivo de nível");
         return;
     }
-    // Gera notas aleatórias para demonstração
     for (int i = 0; i < 100; i++) {
         float timestamp = i * 0.5f;
         const char *notes[] = {"C", "D", "E", "F", "G", "A", "B"};
@@ -487,9 +487,9 @@ void analyze_audio_to_file(AudioData *audio_data, const char *filename) {
     fclose(file);
 }
 
-// =============================================
+//==============================================
 // MAIN (Ponto de entrada do programa)
-// =============================================
+//==============================================
 int main() {
     enableRawMode();
     init_terminal();
