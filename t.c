@@ -1,5 +1,6 @@
-// main.c (integração completa com p-buttons)
+// main.c (integração completa com p-buttons e análise áudio)
 #include "guitar_hero.h"
+#include "mapeamento_audio.h"   // <<< INCLUSÃO DA BIBLIOTECA DE MAPEAMENTO DE ÁUDIO
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@
 #include <sys/time.h>
 #include <termios.h>
 #include <sys/select.h>
+#include <errno.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
@@ -19,23 +21,6 @@
 
 struct termios orig_termios;
 
-/* ------------------------------------------------
-   Assumo que guitar_hero.h define GameState e constantes
-   Vou só considerar que podemos adicionar fd_pbuttons no GameState.
-   ------------------------------------------------ */
-
-/* Se o seu GameState estiver em outro arquivo, garanta que:
-   typedef struct {
-       ...
-       int joy_fd;
-       int fd_pbuttons; // adicionado
-       Mix_Music *musica;
-       int musica_playing;
-       Uint32 start_time;
-       // demais campos...
-   } GameState;
-*/
-
 /* protótipos extras */
 int init_pbuttons(GameState *state);
 void process_input(GameState *state, double tempo_decorrido);
@@ -43,8 +28,7 @@ void check_joystick_input(GameState *state, double tempo_decorrido);
 void check_hits(GameState *state, int pista, double tempo_decorrido);
 int init_joystick(GameState *state);
 
-/* ----------------- seu main adaptado ----------------- */
-
+/* ----------------- main adaptado para chamar análise do áudio ----------------- */
 int main() {
     enableRawMode();
     init_terminal();
@@ -54,7 +38,6 @@ int main() {
         return -1;
     }
 
-    /* Ajustes robustos para áudio (freq, formato, canais, buffer maior) */
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
         fprintf(stderr, "Não foi possível inicializar o SDL_mixer: %s\n", Mix_GetError());
         SDL_Quit();
@@ -64,20 +47,37 @@ int main() {
 
     GameState game_state;
     memset(&game_state, 0, sizeof(GameState));
-    
+
+    // *** INÍCIO DA INTEGRAÇÃO ***
+    const char *arquivo_musica = "musica_sweet.mp3";
+
+    AudioData *audio_data = load_mp3_file(arquivo_musica);
+    if (!audio_data) {
+        fprintf(stderr, "Erro ao carregar áudio para análise!\n");
+        Mix_CloseAudio();
+        SDL_Quit();
+        return -1;
+    }
+
+    if (analyze_audio_to_file(audio_data, LEVEL_FILENAME) != 0) {
+        fprintf(stderr, "Erro ao gerar arquivo de notas '%s'\n", LEVEL_FILENAME);
+        free_audio_data(audio_data);
+        Mix_CloseAudio();
+        SDL_Quit();
+        return -1;
+    }
+
+    free_audio_data(audio_data);
+    // *** FIM DA INTEGRAÇÃO ***
+
     carregar_nivel(&game_state);
     inicializar_jogo(&game_state);
     game_state.joy_fd = init_joystick(&game_state);
-
-    /* inicializa leitura dos push-buttons da placa */
     game_state.fd_pbuttons = init_pbuttons(&game_state);
 
-    const char *arquivo_musica = "musica_sweet.mp3";
     game_state.musica = Mix_LoadMUS(arquivo_musica);
     if (game_state.musica == NULL) {
         fprintf(stderr, "Não foi possível carregar a música '%s': %s\n", arquivo_musica, Mix_GetError());
-        // não damos exit imediato — pode querer testar sem música
-        // mas aqui definimos falha crítica
         if (game_state.fd_pbuttons != -1) close(game_state.fd_pbuttons);
         if (game_state.joy_fd != -1) close(game_state.joy_fd);
         Mix_CloseAudio();
@@ -85,7 +85,6 @@ int main() {
         return -1;
     }
 
-    // Contagem regressiva
     if (system("clear") != 0) {
         fprintf(stderr, "Falha ao limpar tela\n");
     }
@@ -97,31 +96,27 @@ int main() {
     }
     printf("\nJOGUE!\n");
 
-    // Inicia música e marca o tempo exato de início
     if (Mix_PlayMusic(game_state.musica, 1) == -1) {
         fprintf(stderr, "Erro ao tocar musica: %s\n", Mix_GetError());
     } else {
         game_state.musica_playing = 1;
     }
     game_state.start_time = SDL_GetTicks();
-    
-    // Pequeno delay para garantir que a música começou
+
     SDL_Delay(50);
 
     float tempo_final_do_nivel = game_state.note_count > 0 ? 
         game_state.level_notes[game_state.note_count - 1].timestamp + 2.0f : 5.0f;
 
-    // Loop principal do jogo
     while (!game_state.game_over && game_state.musica_playing) {
         Uint32 frame_start = SDL_GetTicks();
         double tempo_decorrido = (double)(frame_start - game_state.start_time) / 1000.0;
 
-        // Só processa inputs e notas após 0.5s para sincronizar com a música
         if (tempo_decorrido > 0.5f) {
             process_input(&game_state, tempo_decorrido - 0.5f);
             update_game(&game_state, tempo_decorrido - 0.5f);
         }
-        
+
         render_game(&game_state, tempo_decorrido);
 
         if (!Mix_PlayingMusic()) {
@@ -151,6 +146,15 @@ int main() {
     finalizar_jogo(&game_state);
     return 0;
 }
+
+/***********************************************
+ *           IMPLEMENTAÇÕES DAS FUNÇÕES
+ ***********************************************/
+
+/* -- (Aqui mantêm-se todas as suas implementações originais para funções como init_terminal, init_joystick, init_pbuttons, enableRawMode, etc.) -- */
+
+/* Resto do código permanece o mesmo, sem alterações */
+
 
 /***********************************************
  *           IMPLEMENTAÇÕES DAS FUNÇÕES
