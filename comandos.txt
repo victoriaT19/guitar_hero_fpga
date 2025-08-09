@@ -91,3 +91,35 @@ Tempo por peíodo = 10,954372
 
 speaker-test -Dhw:0,0 -c2 -t wav
 
+speaker-test 1.2.6
+
+Dispositivo de reprodução é hw:0,0
+Parâmetros do stream são 48000Hz, S16_LE, 2 canais
+Arquivo(s) WAV
+Taxa alterada para 48000Hz (requisitada 48000Hz)
+Tamanho do buffer tem um intervalo de 64 à 1048576
+Tamanho do período tem um intervalo de 32 à 524288
+Usando tamanho máximo de buffer 1048576
+Períodos = 4
+period_size definido = 262144
+buffer_size definido = 1048576
+ 0 - Front Left
+ 1 - Front Right
+Tempo por peíodo = 10,962739
+ 0 - Front Left
+ 1 - Front Right
+Tempo por peíodo = 10,952724
+ 0 - Front Left
+ 1 - Front Right
+Tempo por peíodo = 10,953368
+ 0 - Front Left
+ 1 - Front Right
+Tempo por peíodo = 10,958255
+ 0 - Front Left
+ 1 - Front Right
+Tempo por peíodo = 10,957312
+ 0 - Front Left
+ 1 - Front Right
+^CTempo por peíodo = 6,480859
+
+
