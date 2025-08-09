@@ -1,3 +1,5 @@
+sudo apt-get install libsdl2-dev libsdl2-mixer-dev 
+
 #ifndef LCD_H_INCLUDED
 #define LCD_H_INCLUDED
 
