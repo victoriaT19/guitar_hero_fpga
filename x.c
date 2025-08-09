@@ -1,4 +1,3 @@
-// Inclui os cabeçalhos necessários para o driver e o programa
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -6,13 +5,14 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <time.h> // Adicionado para usar o clock_gettime
 
 // Definir os comandos ioctl
-#define RD_SWITCHES   _IO('a', 'a')
-#define RD_PBUTTONS   _IO('a', 'b')
-#define WR_L_DISPLAY  _IO('a', 'c')
-#define WR_R_DISPLAY  _IO('a', 'd')
-#define WR_RED_LEDS   _IO('a', 'e')
+#define RD_SWITCHES   _IO('a', 'a')
+#define RD_PBUTTONS   _IO('a', 'b')
+#define WR_L_DISPLAY  _IO('a', 'c')
+#define WR_R_DISPLAY  _IO('a', 'd')
+#define WR_RED_LEDS   _IO('a', 'e')
 #define WR_GREEN_LEDS _IO('a', 'f')
 
 // Definições para os displays de 7 segmentos
@@ -35,6 +35,17 @@ static const uint32_t hex_digits[] = {
     HEX_0, HEX_1, HEX_2, HEX_3, HEX_4,
     HEX_5, HEX_6, HEX_7, HEX_8, HEX_9
 };
+
+// Variáveis para a lógica de temporização dos LEDs
+static int led_is_on = 0;
+static long long led_on_time_ms = 0;
+
+// Obtém o tempo atual em milissegundos
+long long get_current_time_ms() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (long long)ts.tv_sec * 1000 + (long long)ts.tv_nsec / 1000000;
+}
 
 // Configura o terminal para não bloquear a leitura de teclado
 void set_terminal_raw_mode() {
@@ -83,26 +94,33 @@ void set_display(int number) {
     printf("Exibindo numero %d nos displays.\n", number);
 }
 
-// Acende os LEDs da cor especificada
+// Acende os LEDs da cor especificada e marca o tempo
 void set_leds(int color) {
     if (fd == -1) return;
 
-    uint32_t val_on = 0xFF; // Todos os LEDs acesos
-    uint32_t val_off = 0x00; // Todos os LEDs apagados
+    // Ajustamos os valores para corresponderem ao número de LEDs no hardware
+    // LEDs Verdes (9) e LEDs Vermelhos (18)
+    uint32_t val_on_green = 0x1FF;   // 9 bits para os LEDs verdes
+    uint32_t val_on_red = 0x3FFFF;   // 18 bits para os LEDs vermelhos
+    uint32_t val_off = 0x00000;
 
     if (color == 1) { // Verde
         ioctl(fd, WR_GREEN_LEDS);
-        write(fd, &val_on, sizeof(val_on));
+        write(fd, &val_on_green, sizeof(val_on_green));
         ioctl(fd, WR_RED_LEDS);
         write(fd, &val_off, sizeof(val_off));
         printf("LEDs Verdes acesos.\n");
     } else { // Vermelho
         ioctl(fd, WR_RED_LEDS);
-        write(fd, &val_on, sizeof(val_on));
+        write(fd, &val_on_red, sizeof(val_on_red));
         ioctl(fd, WR_GREEN_LEDS);
         write(fd, &val_off, sizeof(val_off));
         printf("LEDs Vermelhos acesos.\n");
     }
+
+    // Grava o tempo em que os LEDs foram acesos
+    led_on_time_ms = get_current_time_ms();
+    led_is_on = 1;
 }
 
 // Apaga todos os LEDs
@@ -113,6 +131,7 @@ void clear_leds() {
     write(fd, &val_off, sizeof(val_off));
     ioctl(fd, WR_RED_LEDS);
     write(fd, &val_off, sizeof(val_off));
+    led_is_on = 0;
 }
 
 // Lê o estado dos push-buttons
@@ -149,6 +168,11 @@ int main() {
 
     char ch;
     while (1) {
+        // Verifica se é hora de apagar os LEDs
+        if (led_is_on && get_current_time_ms() - led_on_time_ms >= 500) {
+            clear_leds();
+        }
+
         if (kbhit()) {
             ch = getchar();
             if (ch == 'q') {
