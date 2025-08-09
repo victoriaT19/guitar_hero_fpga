@@ -1,0 +1,1931 @@
+
+target/release/app:     file format elf64-x86-64
+
+Sections:
+Idx Name          Size      VMA               LMA               File off  Algn
+  0 .interp       0000001c  0000000000000318  0000000000000318  00000318  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  1 .note.gnu.property 00000030  0000000000000338  0000000000000338  00000338  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  2 .note.gnu.build-id 00000024  0000000000000368  0000000000000368  00000368  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  3 .note.ABI-tag 00000020  000000000000038c  000000000000038c  0000038c  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .gnu.hash     00000034  00000000000003b0  00000000000003b0  000003b0  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  5 .dynsym       00000408  00000000000003e8  00000000000003e8  000003e8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  6 .dynstr       0000020d  00000000000007f0  00000000000007f0  000007f0  2**0
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  7 .gnu.version  00000056  00000000000009fe  00000000000009fe  000009fe  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  8 .gnu.version_r 00000060  0000000000000a58  0000000000000a58  00000a58  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  9 .rela.dyn     000000f0  0000000000000ab8  0000000000000ab8  00000ab8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 10 .rela.plt     00000330  0000000000000ba8  0000000000000ba8  00000ba8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 11 .init         0000001b  0000000000001000  0000000000001000  00001000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 12 .plt          00000230  0000000000001020  0000000000001020  00001020  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .plt.got      00000010  0000000000001250  0000000000001250  00001250  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 14 .plt.sec      00000220  0000000000001260  0000000000001260  00001260  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 15 .text         000011b2  0000000000001480  0000000000001480  00001480  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 16 .fini         0000000d  0000000000002634  0000000000002634  00002634  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 17 .rodata       00000440  0000000000003000  0000000000003000  00003000  2**4
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 18 .eh_frame_hdr 000000a4  0000000000003440  0000000000003440  00003440  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 19 .eh_frame     00000340  00000000000034e8  00000000000034e8  000034e8  2**3
+                  CONTENTS, ALLOC, LOAD, READONLY, DATA
+ 20 .init_array   00000008  0000000000004c90  0000000000004c90  00003c90  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 21 .fini_array   00000008  0000000000004c98  0000000000004c98  00003c98  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 22 .dynamic      00000210  0000000000004ca0  0000000000004ca0  00003ca0  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 23 .got          00000150  0000000000004eb0  0000000000004eb0  00003eb0  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 24 .data         00000010  0000000000005000  0000000000005000  00004000  2**3
+                  CONTENTS, ALLOC, LOAD, DATA
+ 25 .bss          00000060  0000000000005020  0000000000005020  00004010  2**5
+                  ALLOC
+ 26 .comment      0000002b  0000000000000000  0000000000000000  00004010  2**0
+                  CONTENTS, READONLY
+ 27 .debug_aranges 00000050  0000000000000000  0000000000000000  0000403b  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 28 .debug_info   00004149  0000000000000000  0000000000000000  0000408b  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 29 .debug_abbrev 0000061d  0000000000000000  0000000000000000  000081d4  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 30 .debug_line   000013a7  0000000000000000  0000000000000000  000087f1  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 31 .debug_str    000025f6  0000000000000000  0000000000000000  00009b98  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 32 .debug_line_str 000002c6  0000000000000000  0000000000000000  0000c18e  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 33 .debug_loclists 00000d67  0000000000000000  0000000000000000  0000c454  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 34 .debug_rnglists 000003ed  0000000000000000  0000000000000000  0000d1bb  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+
+Disassembly of section .init:
+
+0000000000001000 <_init>:
+    1000:	f3 0f 1e fa          	endbr64
+    1004:	48 83 ec 08          	sub    $0x8,%rsp
+    1008:	48 8b 05 d9 3f 00 00 	mov    0x3fd9(%rip),%rax        # 4fe8 <__gmon_start__@Base>
+    100f:	48 85 c0             	test   %rax,%rax
+    1012:	74 02                	je     1016 <_init+0x16>
+    1014:	ff d0                	call   *%rax
+    1016:	48 83 c4 08          	add    $0x8,%rsp
+    101a:	c3                   	ret
+
+Disassembly of section .plt:
+
+0000000000001020 <.plt>:
+    1020:	ff 35 92 3e 00 00    	push   0x3e92(%rip)        # 4eb8 <_GLOBAL_OFFSET_TABLE_+0x8>
+    1026:	ff 25 94 3e 00 00    	jmp    *0x3e94(%rip)        # 4ec0 <_GLOBAL_OFFSET_TABLE_+0x10>
+    102c:	0f 1f 40 00          	nopl   0x0(%rax)
+    1030:	f3 0f 1e fa          	endbr64
+    1034:	68 00 00 00 00       	push   $0x0
+    1039:	e9 e2 ff ff ff       	jmp    1020 <_init+0x20>
+    103e:	66 90                	xchg   %ax,%ax
+    1040:	f3 0f 1e fa          	endbr64
+    1044:	68 01 00 00 00       	push   $0x1
+    1049:	e9 d2 ff ff ff       	jmp    1020 <_init+0x20>
+    104e:	66 90                	xchg   %ax,%ax
+    1050:	f3 0f 1e fa          	endbr64
+    1054:	68 02 00 00 00       	push   $0x2
+    1059:	e9 c2 ff ff ff       	jmp    1020 <_init+0x20>
+    105e:	66 90                	xchg   %ax,%ax
+    1060:	f3 0f 1e fa          	endbr64
+    1064:	68 03 00 00 00       	push   $0x3
+    1069:	e9 b2 ff ff ff       	jmp    1020 <_init+0x20>
+    106e:	66 90                	xchg   %ax,%ax
+    1070:	f3 0f 1e fa          	endbr64
+    1074:	68 04 00 00 00       	push   $0x4
+    1079:	e9 a2 ff ff ff       	jmp    1020 <_init+0x20>
+    107e:	66 90                	xchg   %ax,%ax
+    1080:	f3 0f 1e fa          	endbr64
+    1084:	68 05 00 00 00       	push   $0x5
+    1089:	e9 92 ff ff ff       	jmp    1020 <_init+0x20>
+    108e:	66 90                	xchg   %ax,%ax
+    1090:	f3 0f 1e fa          	endbr64
+    1094:	68 06 00 00 00       	push   $0x6
+    1099:	e9 82 ff ff ff       	jmp    1020 <_init+0x20>
+    109e:	66 90                	xchg   %ax,%ax
+    10a0:	f3 0f 1e fa          	endbr64
+    10a4:	68 07 00 00 00       	push   $0x7
+    10a9:	e9 72 ff ff ff       	jmp    1020 <_init+0x20>
+    10ae:	66 90                	xchg   %ax,%ax
+    10b0:	f3 0f 1e fa          	endbr64
+    10b4:	68 08 00 00 00       	push   $0x8
+    10b9:	e9 62 ff ff ff       	jmp    1020 <_init+0x20>
+    10be:	66 90                	xchg   %ax,%ax
+    10c0:	f3 0f 1e fa          	endbr64
+    10c4:	68 09 00 00 00       	push   $0x9
+    10c9:	e9 52 ff ff ff       	jmp    1020 <_init+0x20>
+    10ce:	66 90                	xchg   %ax,%ax
+    10d0:	f3 0f 1e fa          	endbr64
+    10d4:	68 0a 00 00 00       	push   $0xa
+    10d9:	e9 42 ff ff ff       	jmp    1020 <_init+0x20>
+    10de:	66 90                	xchg   %ax,%ax
+    10e0:	f3 0f 1e fa          	endbr64
+    10e4:	68 0b 00 00 00       	push   $0xb
+    10e9:	e9 32 ff ff ff       	jmp    1020 <_init+0x20>
+    10ee:	66 90                	xchg   %ax,%ax
+    10f0:	f3 0f 1e fa          	endbr64
+    10f4:	68 0c 00 00 00       	push   $0xc
+    10f9:	e9 22 ff ff ff       	jmp    1020 <_init+0x20>
+    10fe:	66 90                	xchg   %ax,%ax
+    1100:	f3 0f 1e fa          	endbr64
+    1104:	68 0d 00 00 00       	push   $0xd
+    1109:	e9 12 ff ff ff       	jmp    1020 <_init+0x20>
+    110e:	66 90                	xchg   %ax,%ax
+    1110:	f3 0f 1e fa          	endbr64
+    1114:	68 0e 00 00 00       	push   $0xe
+    1119:	e9 02 ff ff ff       	jmp    1020 <_init+0x20>
+    111e:	66 90                	xchg   %ax,%ax
+    1120:	f3 0f 1e fa          	endbr64
+    1124:	68 0f 00 00 00       	push   $0xf
+    1129:	e9 f2 fe ff ff       	jmp    1020 <_init+0x20>
+    112e:	66 90                	xchg   %ax,%ax
+    1130:	f3 0f 1e fa          	endbr64
+    1134:	68 10 00 00 00       	push   $0x10
+    1139:	e9 e2 fe ff ff       	jmp    1020 <_init+0x20>
+    113e:	66 90                	xchg   %ax,%ax
+    1140:	f3 0f 1e fa          	endbr64
+    1144:	68 11 00 00 00       	push   $0x11
+    1149:	e9 d2 fe ff ff       	jmp    1020 <_init+0x20>
+    114e:	66 90                	xchg   %ax,%ax
+    1150:	f3 0f 1e fa          	endbr64
+    1154:	68 12 00 00 00       	push   $0x12
+    1159:	e9 c2 fe ff ff       	jmp    1020 <_init+0x20>
+    115e:	66 90                	xchg   %ax,%ax
+    1160:	f3 0f 1e fa          	endbr64
+    1164:	68 13 00 00 00       	push   $0x13
+    1169:	e9 b2 fe ff ff       	jmp    1020 <_init+0x20>
+    116e:	66 90                	xchg   %ax,%ax
+    1170:	f3 0f 1e fa          	endbr64
+    1174:	68 14 00 00 00       	push   $0x14
+    1179:	e9 a2 fe ff ff       	jmp    1020 <_init+0x20>
+    117e:	66 90                	xchg   %ax,%ax
+    1180:	f3 0f 1e fa          	endbr64
+    1184:	68 15 00 00 00       	push   $0x15
+    1189:	e9 92 fe ff ff       	jmp    1020 <_init+0x20>
+    118e:	66 90                	xchg   %ax,%ax
+    1190:	f3 0f 1e fa          	endbr64
+    1194:	68 16 00 00 00       	push   $0x16
+    1199:	e9 82 fe ff ff       	jmp    1020 <_init+0x20>
+    119e:	66 90                	xchg   %ax,%ax
+    11a0:	f3 0f 1e fa          	endbr64
+    11a4:	68 17 00 00 00       	push   $0x17
+    11a9:	e9 72 fe ff ff       	jmp    1020 <_init+0x20>
+    11ae:	66 90                	xchg   %ax,%ax
+    11b0:	f3 0f 1e fa          	endbr64
+    11b4:	68 18 00 00 00       	push   $0x18
+    11b9:	e9 62 fe ff ff       	jmp    1020 <_init+0x20>
+    11be:	66 90                	xchg   %ax,%ax
+    11c0:	f3 0f 1e fa          	endbr64
+    11c4:	68 19 00 00 00       	push   $0x19
+    11c9:	e9 52 fe ff ff       	jmp    1020 <_init+0x20>
+    11ce:	66 90                	xchg   %ax,%ax
+    11d0:	f3 0f 1e fa          	endbr64
+    11d4:	68 1a 00 00 00       	push   $0x1a
+    11d9:	e9 42 fe ff ff       	jmp    1020 <_init+0x20>
+    11de:	66 90                	xchg   %ax,%ax
+    11e0:	f3 0f 1e fa          	endbr64
+    11e4:	68 1b 00 00 00       	push   $0x1b
+    11e9:	e9 32 fe ff ff       	jmp    1020 <_init+0x20>
+    11ee:	66 90                	xchg   %ax,%ax
+    11f0:	f3 0f 1e fa          	endbr64
+    11f4:	68 1c 00 00 00       	push   $0x1c
+    11f9:	e9 22 fe ff ff       	jmp    1020 <_init+0x20>
+    11fe:	66 90                	xchg   %ax,%ax
+    1200:	f3 0f 1e fa          	endbr64
+    1204:	68 1d 00 00 00       	push   $0x1d
+    1209:	e9 12 fe ff ff       	jmp    1020 <_init+0x20>
+    120e:	66 90                	xchg   %ax,%ax
+    1210:	f3 0f 1e fa          	endbr64
+    1214:	68 1e 00 00 00       	push   $0x1e
+    1219:	e9 02 fe ff ff       	jmp    1020 <_init+0x20>
+    121e:	66 90                	xchg   %ax,%ax
+    1220:	f3 0f 1e fa          	endbr64
+    1224:	68 1f 00 00 00       	push   $0x1f
+    1229:	e9 f2 fd ff ff       	jmp    1020 <_init+0x20>
+    122e:	66 90                	xchg   %ax,%ax
+    1230:	f3 0f 1e fa          	endbr64
+    1234:	68 20 00 00 00       	push   $0x20
+    1239:	e9 e2 fd ff ff       	jmp    1020 <_init+0x20>
+    123e:	66 90                	xchg   %ax,%ax
+    1240:	f3 0f 1e fa          	endbr64
+    1244:	68 21 00 00 00       	push   $0x21
+    1249:	e9 d2 fd ff ff       	jmp    1020 <_init+0x20>
+    124e:	66 90                	xchg   %ax,%ax
+
+Disassembly of section .plt.got:
+
+0000000000001250 <__cxa_finalize@plt>:
+    1250:	f3 0f 1e fa          	endbr64
+    1254:	ff 25 86 3d 00 00    	jmp    *0x3d86(%rip)        # 4fe0 <__cxa_finalize@GLIBC_2.2.5>
+    125a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+Disassembly of section .plt.sec:
+
+0000000000001260 <select@plt>:
+    1260:	f3 0f 1e fa          	endbr64
+    1264:	ff 25 5e 3c 00 00    	jmp    *0x3c5e(%rip)        # 4ec8 <select@GLIBC_2.2.5>
+    126a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001270 <__isoc99_fscanf@plt>:
+    1270:	f3 0f 1e fa          	endbr64
+    1274:	ff 25 56 3c 00 00    	jmp    *0x3c56(%rip)        # 4ed0 <__isoc99_fscanf@GLIBC_2.7>
+    127a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001280 <Mix_PlayingMusic@plt>:
+    1280:	f3 0f 1e fa          	endbr64
+    1284:	ff 25 4e 3c 00 00    	jmp    *0x3c4e(%rip)        # 4ed8 <Mix_PlayingMusic@Base>
+    128a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001290 <close@plt>:
+    1290:	f3 0f 1e fa          	endbr64
+    1294:	ff 25 46 3c 00 00    	jmp    *0x3c46(%rip)        # 4ee0 <close@GLIBC_2.2.5>
+    129a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012a0 <__stack_chk_fail@plt>:
+    12a0:	f3 0f 1e fa          	endbr64
+    12a4:	ff 25 3e 3c 00 00    	jmp    *0x3c3e(%rip)        # 4ee8 <__stack_chk_fail@GLIBC_2.4>
+    12aa:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012b0 <perror@plt>:
+    12b0:	f3 0f 1e fa          	endbr64
+    12b4:	ff 25 36 3c 00 00    	jmp    *0x3c36(%rip)        # 4ef0 <perror@GLIBC_2.2.5>
+    12ba:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012c0 <memset@plt>:
+    12c0:	f3 0f 1e fa          	endbr64
+    12c4:	ff 25 2e 3c 00 00    	jmp    *0x3c2e(%rip)        # 4ef8 <memset@GLIBC_2.2.5>
+    12ca:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012d0 <SDL_Quit@plt>:
+    12d0:	f3 0f 1e fa          	endbr64
+    12d4:	ff 25 26 3c 00 00    	jmp    *0x3c26(%rip)        # 4f00 <SDL_Quit@Base>
+    12da:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012e0 <getc@plt>:
+    12e0:	f3 0f 1e fa          	endbr64
+    12e4:	ff 25 1e 3c 00 00    	jmp    *0x3c1e(%rip)        # 4f08 <getc@GLIBC_2.2.5>
+    12ea:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000012f0 <fclose@plt>:
+    12f0:	f3 0f 1e fa          	endbr64
+    12f4:	ff 25 16 3c 00 00    	jmp    *0x3c16(%rip)        # 4f10 <fclose@GLIBC_2.2.5>
+    12fa:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001300 <open@plt>:
+    1300:	f3 0f 1e fa          	endbr64
+    1304:	ff 25 0e 3c 00 00    	jmp    *0x3c0e(%rip)        # 4f18 <open@GLIBC_2.2.5>
+    130a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001310 <SDL_Delay@plt>:
+    1310:	f3 0f 1e fa          	endbr64
+    1314:	ff 25 06 3c 00 00    	jmp    *0x3c06(%rip)        # 4f20 <SDL_Delay@Base>
+    131a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001320 <tcsetattr@plt>:
+    1320:	f3 0f 1e fa          	endbr64
+    1324:	ff 25 fe 3b 00 00    	jmp    *0x3bfe(%rip)        # 4f28 <tcsetattr@GLIBC_2.2.5>
+    132a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001330 <Mix_LoadMUS@plt>:
+    1330:	f3 0f 1e fa          	endbr64
+    1334:	ff 25 f6 3b 00 00    	jmp    *0x3bf6(%rip)        # 4f30 <Mix_LoadMUS@Base>
+    133a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001340 <tcgetattr@plt>:
+    1340:	f3 0f 1e fa          	endbr64
+    1344:	ff 25 ee 3b 00 00    	jmp    *0x3bee(%rip)        # 4f38 <tcgetattr@GLIBC_2.2.5>
+    134a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001350 <Mix_PlayMusic@plt>:
+    1350:	f3 0f 1e fa          	endbr64
+    1354:	ff 25 e6 3b 00 00    	jmp    *0x3be6(%rip)        # 4f40 <Mix_PlayMusic@Base>
+    135a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001360 <exit@plt>:
+    1360:	f3 0f 1e fa          	endbr64
+    1364:	ff 25 de 3b 00 00    	jmp    *0x3bde(%rip)        # 4f48 <exit@GLIBC_2.2.5>
+    136a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001370 <read@plt>:
+    1370:	f3 0f 1e fa          	endbr64
+    1374:	ff 25 d6 3b 00 00    	jmp    *0x3bd6(%rip)        # 4f50 <read@GLIBC_2.2.5>
+    137a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001380 <__strcpy_chk@plt>:
+    1380:	f3 0f 1e fa          	endbr64
+    1384:	ff 25 ce 3b 00 00    	jmp    *0x3bce(%rip)        # 4f58 <__strcpy_chk@GLIBC_2.3.4>
+    138a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001390 <Mix_FreeMusic@plt>:
+    1390:	f3 0f 1e fa          	endbr64
+    1394:	ff 25 c6 3b 00 00    	jmp    *0x3bc6(%rip)        # 4f60 <Mix_FreeMusic@Base>
+    139a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013a0 <__cxa_atexit@plt>:
+    13a0:	f3 0f 1e fa          	endbr64
+    13a4:	ff 25 be 3b 00 00    	jmp    *0x3bbe(%rip)        # 4f68 <__cxa_atexit@GLIBC_2.2.5>
+    13aa:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013b0 <Mix_Quit@plt>:
+    13b0:	f3 0f 1e fa          	endbr64
+    13b4:	ff 25 b6 3b 00 00    	jmp    *0x3bb6(%rip)        # 4f70 <Mix_Quit@Base>
+    13ba:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013c0 <puts@plt>:
+    13c0:	f3 0f 1e fa          	endbr64
+    13c4:	ff 25 ae 3b 00 00    	jmp    *0x3bae(%rip)        # 4f78 <puts@GLIBC_2.2.5>
+    13ca:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013d0 <__printf_chk@plt>:
+    13d0:	f3 0f 1e fa          	endbr64
+    13d4:	ff 25 a6 3b 00 00    	jmp    *0x3ba6(%rip)        # 4f80 <__printf_chk@GLIBC_2.3.4>
+    13da:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013e0 <SDL_GetError@plt>:
+    13e0:	f3 0f 1e fa          	endbr64
+    13e4:	ff 25 9e 3b 00 00    	jmp    *0x3b9e(%rip)        # 4f88 <SDL_GetError@Base>
+    13ea:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+00000000000013f0 <usleep@plt>:
+    13f0:	f3 0f 1e fa          	endbr64
+    13f4:	ff 25 96 3b 00 00    	jmp    *0x3b96(%rip)        # 4f90 <usleep@GLIBC_2.2.5>
+    13fa:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001400 <fwrite@plt>:
+    1400:	f3 0f 1e fa          	endbr64
+    1404:	ff 25 8e 3b 00 00    	jmp    *0x3b8e(%rip)        # 4f98 <fwrite@GLIBC_2.2.5>
+    140a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001410 <sleep@plt>:
+    1410:	f3 0f 1e fa          	endbr64
+    1414:	ff 25 86 3b 00 00    	jmp    *0x3b86(%rip)        # 4fa0 <sleep@GLIBC_2.2.5>
+    141a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001420 <SDL_GetTicks@plt>:
+    1420:	f3 0f 1e fa          	endbr64
+    1424:	ff 25 7e 3b 00 00    	jmp    *0x3b7e(%rip)        # 4fa8 <SDL_GetTicks@Base>
+    142a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001430 <putchar@plt>:
+    1430:	f3 0f 1e fa          	endbr64
+    1434:	ff 25 76 3b 00 00    	jmp    *0x3b76(%rip)        # 4fb0 <putchar@GLIBC_2.2.5>
+    143a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001440 <Mix_OpenAudio@plt>:
+    1440:	f3 0f 1e fa          	endbr64
+    1444:	ff 25 6e 3b 00 00    	jmp    *0x3b6e(%rip)        # 4fb8 <Mix_OpenAudio@Base>
+    144a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001450 <fopen@plt>:
+    1450:	f3 0f 1e fa          	endbr64
+    1454:	ff 25 66 3b 00 00    	jmp    *0x3b66(%rip)        # 4fc0 <fopen@GLIBC_2.2.5>
+    145a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001460 <SDL_Init@plt>:
+    1460:	f3 0f 1e fa          	endbr64
+    1464:	ff 25 5e 3b 00 00    	jmp    *0x3b5e(%rip)        # 4fc8 <SDL_Init@Base>
+    146a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+0000000000001470 <system@plt>:
+    1470:	f3 0f 1e fa          	endbr64
+    1474:	ff 25 56 3b 00 00    	jmp    *0x3b56(%rip)        # 4fd0 <system@GLIBC_2.2.5>
+    147a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+Disassembly of section .text:
+
+0000000000001480 <carregar_nivel.cold>:
+}
+
+void carregar_nivel(GameState *state) {
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    if (!file) {
+        perror("Nao foi possivel abrir o arquivo de nivel");
+    1480:	48 8d 3d c9 1c 00 00 	lea    0x1cc9(%rip),%rdi        # 3150 <_IO_stdin_used+0x150>
+    1487:	e8 24 fe ff ff       	call   12b0 <perror@plt>
+        exit(1);
+    148c:	bf 01 00 00 00       	mov    $0x1,%edi
+    1491:	e8 ca fe ff ff       	call   1360 <exit@plt>
+    1496:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+    149d:	00 00 00 
+
+00000000000014a0 <main>:
+int main() {
+    14a0:	f3 0f 1e fa          	endbr64
+    14a4:	41 57                	push   %r15
+    14a6:	41 56                	push   %r14
+    14a8:	41 55                	push   %r13
+    14aa:	41 54                	push   %r12
+    14ac:	55                   	push   %rbp
+    14ad:	53                   	push   %rbx
+    14ae:	4c 8d 9c 24 00 50 ff 	lea    -0xb000(%rsp),%r11
+    14b5:	ff 
+    14b6:	48 81 ec 00 10 00 00 	sub    $0x1000,%rsp
+    14bd:	48 83 0c 24 00       	orq    $0x0,(%rsp)
+    14c2:	4c 39 dc             	cmp    %r11,%rsp
+    14c5:	75 ef                	jne    14b6 <main+0x16>
+    14c7:	48 81 ec 88 0c 00 00 	sub    $0xc88,%rsp
+    14ce:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    14d5:	00 00 
+    14d7:	48 89 84 24 78 bc 00 	mov    %rax,0xbc78(%rsp)
+    14de:	00 
+    14df:	31 c0                	xor    %eax,%eax
+    enableRawMode();
+    14e1:	e8 fa 06 00 00       	call   1be0 <enableRawMode>
+    init_terminal();
+    14e6:	31 c0                	xor    %eax,%eax
+    14e8:	e8 73 06 00 00       	call   1b60 <init_terminal>
+    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0) {
+    14ed:	bf 11 00 00 00       	mov    $0x11,%edi
+    14f2:	e8 69 ff ff ff       	call   1460 <SDL_Init@plt>
+    14f7:	85 c0                	test   %eax,%eax
+    14f9:	0f 88 c5 04 00 00    	js     19c4 <main+0x524>
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+    14ff:	b9 00 08 00 00       	mov    $0x800,%ecx
+    1504:	ba 02 00 00 00       	mov    $0x2,%edx
+    1509:	be 10 80 00 00       	mov    $0x8010,%esi
+    150e:	bf 44 ac 00 00       	mov    $0xac44,%edi
+    1513:	e8 28 ff ff ff       	call   1440 <Mix_OpenAudio@plt>
+    1518:	85 c0                	test   %eax,%eax
+    151a:	0f 88 ec 04 00 00    	js     1a0c <main+0x56c>
+    Mix_Music *musica_de_fundo = Mix_LoadMUS(arquivo_musica);
+    1520:	48 8d 1d a0 1b 00 00 	lea    0x1ba0(%rip),%rbx        # 30c7 <_IO_stdin_used+0xc7>
+    1527:	48 89 df             	mov    %rbx,%rdi
+    152a:	e8 01 fe ff ff       	call   1330 <Mix_LoadMUS@plt>
+    152f:	48 89 44 24 28       	mov    %rax,0x28(%rsp)
+    if (musica_de_fundo == NULL) {
+    1534:	48 85 c0             	test   %rax,%rax
+    1537:	0f 84 af 04 00 00    	je     19ec <main+0x54c>
+   case no work is done at all.  We detect these problems by referring
+   non-existing functions.  */
+__fortify_function void *
+__NTH (memset (void *__dest, int __ch, size_t __len))
+{
+  return __builtin___memset_chk (__dest, __ch, __len,
+    153d:	4c 8d a4 24 c0 00 00 	lea    0xc0(%rsp),%r12
+    1544:	00 
+    1545:	ba b0 bb 00 00       	mov    $0xbbb0,%edx
+    154a:	31 f6                	xor    %esi,%esi
+    154c:	4c 89 e7             	mov    %r12,%rdi
+    154f:	e8 6c fd ff ff       	call   12c0 <memset@plt>
+    carregar_nivel(&game_state);
+    1554:	4c 89 e7             	mov    %r12,%rdi
+    1557:	e8 34 08 00 00       	call   1d90 <carregar_nivel>
+    inicializar_jogo(&game_state);
+    155c:	4c 89 e7             	mov    %r12,%rdi
+    155f:	e8 9c 07 00 00       	call   1d00 <inicializar_jogo>
+      if (__OPEN_NEEDS_MODE (__oflag) && __va_arg_pack_len () < 1)
+	{
+	  __open_missing_mode ();
+	  return __open_2 (__path, __oflag);
+	}
+      return __open_alias (__path, __oflag, __va_arg_pack ());
+    1564:	be 00 08 00 00       	mov    $0x800,%esi
+    1569:	48 8d 3d b7 1a 00 00 	lea    0x1ab7(%rip),%rdi        # 3027 <_IO_stdin_used+0x27>
+    1570:	31 c0                	xor    %eax,%eax
+    1572:	e8 89 fd ff ff       	call   1300 <open@plt>
+    1577:	89 c3                	mov    %eax,%ebx
+    if (joy_fd == -1) {
+    1579:	83 f8 ff             	cmp    $0xffffffff,%eax
+    157c:	0f 84 31 04 00 00    	je     19b3 <main+0x513>
+}
+
+__fortify_function int
+printf (const char *__restrict __fmt, ...)
+{
+  return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
+    1582:	48 8d 3d 4f 1b 00 00 	lea    0x1b4f(%rip),%rdi        # 30d8 <_IO_stdin_used+0xd8>
+    game_state.joy_fd = init_joystick(&game_state);
+    1589:	89 9c 24 54 bc 00 00 	mov    %ebx,0xbc54(%rsp)
+    1590:	e8 2b fe ff ff       	call   13c0 <puts@plt>
+    Mix_PlayMusic(musica_de_fundo, 1);
+    1595:	48 8b 7c 24 28       	mov    0x28(%rsp),%rdi
+    159a:	be 01 00 00 00       	mov    $0x1,%esi
+    159f:	e8 ac fd ff ff       	call   1350 <Mix_PlayMusic@plt>
+        game_state.level_notes[game_state.note_count - 1].timestamp + 2.0f : 5.0f;
+    15a4:	f3 0f 10 25 60 1a 00 	movss  0x1a60(%rip),%xmm4        # 300c <_IO_stdin_used+0xc>
+    15ab:	00 
+    float tempo_final_do_nivel = game_state.note_count > 0 ? 
+    15ac:	8b 84 24 40 bc 00 00 	mov    0xbc40(%rsp),%eax
+        game_state.level_notes[game_state.note_count - 1].timestamp + 2.0f : 5.0f;
+    15b3:	f3 0f 11 64 24 24    	movss  %xmm4,0x24(%rsp)
+    15b9:	85 c0                	test   %eax,%eax
+    15bb:	7e 20                	jle    15dd <main+0x13d>
+    15bd:	83 e8 01             	sub    $0x1,%eax
+    15c0:	f3 0f 10 05 48 1a 00 	movss  0x1a48(%rip),%xmm0        # 3010 <_IO_stdin_used+0x10>
+    15c7:	00 
+    15c8:	48 98                	cltq
+    15ca:	48 6b c0 18          	imul   $0x18,%rax,%rax
+    15ce:	f3 0f 58 84 04 c0 00 	addss  0xc0(%rsp,%rax,1),%xmm0
+    15d5:	00 00 
+    15d7:	f3 0f 11 44 24 24    	movss  %xmm0,0x24(%rsp)
+    sleep(3);
+    15dd:	bf 03 00 00 00       	mov    $0x3,%edi
+    15e2:	48 8d 5c 24 30       	lea    0x30(%rsp),%rbx
+    15e7:	e8 24 fe ff ff       	call   1410 <sleep@plt>
+    while (jogo_esta_rodando && Mix_PlayingMusic() && !game_state.game_over) {
+    15ec:	48 8d 44 24 40       	lea    0x40(%rsp),%rax
+    double tempo_decorrido = 0;
+    15f1:	48 c7 44 24 08 00 00 	movq   $0x0,0x8(%rsp)
+    15f8:	00 00 
+    15fa:	48 89 44 24 10       	mov    %rax,0x10(%rsp)
+    15ff:	90                   	nop
+    while (jogo_esta_rodando && Mix_PlayingMusic() && !game_state.game_over) {
+    1600:	e8 7b fc ff ff       	call   1280 <Mix_PlayingMusic@plt>
+    1605:	85 c0                	test   %eax,%eax
+    1607:	0f 84 ab 01 00 00    	je     17b8 <main+0x318>
+    160d:	44 8b bc 24 58 bc 00 	mov    0xbc58(%rsp),%r15d
+    1614:	00 
+    1615:	45 85 ff             	test   %r15d,%r15d
+    1618:	0f 85 9a 01 00 00    	jne    17b8 <main+0x318>
+        frame_start_time = SDL_GetTicks();
+    161e:	e8 fd fd ff ff       	call   1420 <SDL_GetTicks@plt>
+    1623:	89 c5                	mov    %eax,%ebp
+        tempo_decorrido = (double)(SDL_GetTicks() - game_state.start_time) / 1000.0;
+    1625:	e8 f6 fd ff ff       	call   1420 <SDL_GetTicks@plt>
+    162a:	66 0f ef c0          	pxor   %xmm0,%xmm0
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    162e:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+    1633:	31 c9                	xor    %ecx,%ecx
+        tempo_decorrido = (double)(SDL_GetTicks() - game_state.start_time) / 1000.0;
+    1635:	2b 84 24 50 bc 00 00 	sub    0xbc50(%rsp),%eax
+    FD_SET(STDIN_FILENO, &fds);
+    163c:	66 0f 6f 25 ec 1d 00 	movdqa 0x1dec(%rip),%xmm4        # 3430 <CSWTCH.26+0x40>
+    1643:	00 
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    1644:	31 d2                	xor    %edx,%edx
+    1646:	49 89 d8             	mov    %rbx,%r8
+        tempo_decorrido = (double)(SDL_GetTicks() - game_state.start_time) / 1000.0;
+    1649:	f2 48 0f 2a c0       	cvtsi2sd %rax,%xmm0
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    164e:	bf 01 00 00 00       	mov    $0x1,%edi
+        tempo_decorrido = (double)(SDL_GetTicks() - game_state.start_time) / 1000.0;
+    1653:	f2 0f 5e 05 c5 1d 00 	divsd  0x1dc5(%rip),%xmm0        # 3420 <CSWTCH.26+0x30>
+    165a:	00 
+    165b:	f2 0f 11 44 24 08    	movsd  %xmm0,0x8(%rsp)
+    struct timeval tv = {0, 0};
+    1661:	66 0f ef c0          	pxor   %xmm0,%xmm0
+    FD_SET(STDIN_FILENO, &fds);
+    1665:	0f 29 64 24 40       	movaps %xmm4,0x40(%rsp)
+    struct timeval tv = {0, 0};
+    166a:	0f 29 44 24 30       	movaps %xmm0,0x30(%rsp)
+    FD_SET(STDIN_FILENO, &fds);
+    166f:	0f 29 44 24 50       	movaps %xmm0,0x50(%rsp)
+    1674:	0f 29 44 24 60       	movaps %xmm0,0x60(%rsp)
+    1679:	0f 29 44 24 70       	movaps %xmm0,0x70(%rsp)
+    167e:	0f 29 84 24 80 00 00 	movaps %xmm0,0x80(%rsp)
+    1685:	00 
+    1686:	0f 29 84 24 90 00 00 	movaps %xmm0,0x90(%rsp)
+    168d:	00 
+    168e:	0f 29 84 24 a0 00 00 	movaps %xmm0,0xa0(%rsp)
+    1695:	00 
+    1696:	0f 29 84 24 b0 00 00 	movaps %xmm0,0xb0(%rsp)
+    169d:	00 
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    169e:	e8 bd fb ff ff       	call   1260 <select@plt>
+    fclose(file);
+    printf("%d notas carregadas e mapeadas para o jogo.\n", state->note_count);
+}
+
+void process_input(GameState *state, double tempo_decorrido) {
+    if (kbhit()) { 
+    16a3:	85 c0                	test   %eax,%eax
+    16a5:	0f 8f 9d 02 00 00    	jg     1948 <main+0x4a8>
+            printf(">>> JOGADOR APERTOU A PISTA: %d\n", pista);
+            check_hits(state, pista, tempo_decorrido);
+        }
+    }
+    
+    if (state->joy_fd != -1) {
+    16ab:	8b bc 24 54 bc 00 00 	mov    0xbc54(%rsp),%edi
+    16b2:	83 ff ff             	cmp    $0xffffffff,%edi
+    16b5:	0f 85 15 02 00 00    	jne    18d0 <main+0x430>
+        }
+    }
+}
+
+void update_game(GameState *state, double tempo_decorrido) {
+    for (int i = 0; i < state->note_count; i++) {
+    16bb:	8b 84 24 40 bc 00 00 	mov    0xbc40(%rsp),%eax
+    16c2:	4c 8d b4 24 c4 00 00 	lea    0xc4(%rsp),%r14
+    16c9:	00 
+    16ca:	4c 8d 2d 8f 19 00 00 	lea    0x198f(%rip),%r13        # 3060 <_IO_stdin_used+0x60>
+    16d1:	85 c0                	test   %eax,%eax
+    16d3:	7f 1c                	jg     16f1 <main+0x251>
+    16d5:	e9 9e 00 00 00       	jmp    1778 <main+0x2d8>
+    16da:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    16e0:	41 83 c7 01          	add    $0x1,%r15d
+    16e4:	49 83 c6 18          	add    $0x18,%r14
+    16e8:	41 39 c7             	cmp    %eax,%r15d
+    16eb:	0f 8d 87 00 00 00    	jge    1778 <main+0x2d8>
+        if (!state->level_notes[i].foi_processada && 
+    16f1:	41 8b 56 0c          	mov    0xc(%r14),%edx
+    16f5:	85 d2                	test   %edx,%edx
+    16f7:	75 e7                	jne    16e0 <main+0x240>
+            tempo_decorrido > state->level_notes[i].timestamp + 0.2) {
+    16f9:	66 0f ef c0          	pxor   %xmm0,%xmm0
+        if (!state->level_notes[i].foi_processada && 
+    16fd:	f2 0f 10 54 24 08    	movsd  0x8(%rsp),%xmm2
+            tempo_decorrido > state->level_notes[i].timestamp + 0.2) {
+    1703:	f3 41 0f 5a 46 fc    	cvtss2sd -0x4(%r14),%xmm0
+    1709:	f2 0f 58 05 07 1d 00 	addsd  0x1d07(%rip),%xmm0        # 3418 <CSWTCH.26+0x28>
+    1710:	00 
+        if (!state->level_notes[i].foi_processada && 
+    1711:	66 0f 2f d0          	comisd %xmm0,%xmm2
+    1715:	76 c9                	jbe    16e0 <main+0x240>
+    1717:	4c 89 f2             	mov    %r14,%rdx
+    171a:	4c 89 ee             	mov    %r13,%rsi
+    171d:	bf 02 00 00 00       	mov    $0x2,%edi
+    1722:	31 c0                	xor    %eax,%eax
+    1724:	e8 a7 fc ff ff       	call   13d0 <__printf_chk@plt>
+            printf("ERROU! Nota %s\n", state->level_notes[i].note_name);
+            state->combo = 1;
+            state->consecutive_misses++;
+    1729:	8b 84 24 4c bc 00 00 	mov    0xbc4c(%rsp),%eax
+            state->combo = 1;
+    1730:	c7 84 24 48 bc 00 00 	movl   $0x1,0xbc48(%rsp)
+    1737:	01 00 00 00 
+            state->consecutive_misses++;
+    173b:	83 c0 01             	add    $0x1,%eax
+    173e:	89 84 24 4c bc 00 00 	mov    %eax,0xbc4c(%rsp)
+            state->level_notes[i].foi_processada = 1;
+    1745:	41 c7 46 0c 01 00 00 	movl   $0x1,0xc(%r14)
+    174c:	00 
+            
+            if (state->consecutive_misses >= MAX_MISSES) {
+    174d:	83 f8 02             	cmp    $0x2,%eax
+    1750:	7e 0b                	jle    175d <main+0x2bd>
+                state->game_over = 1;
+    1752:	c7 84 24 58 bc 00 00 	movl   $0x1,0xbc58(%rsp)
+    1759:	01 00 00 00 
+    for (int i = 0; i < state->note_count; i++) {
+    175d:	8b 84 24 40 bc 00 00 	mov    0xbc40(%rsp),%eax
+    1764:	41 83 c7 01          	add    $0x1,%r15d
+    1768:	49 83 c6 18          	add    $0x18,%r14
+    176c:	41 39 c7             	cmp    %eax,%r15d
+    176f:	7c 80                	jl     16f1 <main+0x251>
+    1771:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+        render_game(&game_state, tempo_decorrido);
+    1778:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+    177e:	4c 89 e7             	mov    %r12,%rdi
+    1781:	e8 8a 0b 00 00       	call   2310 <render_game>
+        if (tempo_decorrido > tempo_final_do_nivel) {
+    1786:	66 0f ef ed          	pxor   %xmm5,%xmm5
+    178a:	f3 0f 5a 6c 24 24    	cvtss2sd 0x24(%rsp),%xmm5
+    1790:	f2 0f 11 6c 24 18    	movsd  %xmm5,0x18(%rsp)
+        frame_time_spent = SDL_GetTicks() - frame_start_time;
+    1796:	e8 85 fc ff ff       	call   1420 <SDL_GetTicks@plt>
+    179b:	29 e8                	sub    %ebp,%eax
+        if (frame_time_spent < FRAME_DELAY) {
+    179d:	83 f8 0f             	cmp    $0xf,%eax
+    17a0:	0f 8e 8a 01 00 00    	jle    1930 <main+0x490>
+    while (jogo_esta_rodando && Mix_PlayingMusic() && !game_state.game_over) {
+    17a6:	f2 0f 10 74 24 08    	movsd  0x8(%rsp),%xmm6
+    17ac:	66 0f 2f 74 24 18    	comisd 0x18(%rsp),%xmm6
+    17b2:	0f 86 48 fe ff ff    	jbe    1600 <main+0x160>
+    struct timeval tv = {0, 0};
+    17b8:	66 0f ef c9          	pxor   %xmm1,%xmm1
+    17bc:	eb 29                	jmp    17e7 <main+0x347>
+    17be:	66 90                	xchg   %ax,%ax
+    while (!kbhit() && game_state.game_over) {
+    17c0:	8b 84 24 58 bc 00 00 	mov    0xbc58(%rsp),%eax
+    17c7:	85 c0                	test   %eax,%eax
+    17c9:	74 7b                	je     1846 <main+0x3a6>
+        render_game(&game_state, tempo_decorrido);
+    17cb:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+    17d1:	4c 89 e7             	mov    %r12,%rdi
+    17d4:	e8 37 0b 00 00       	call   2310 <render_game>
+        usleep(100000);
+    17d9:	bf a0 86 01 00       	mov    $0x186a0,%edi
+    17de:	e8 0d fc ff ff       	call   13f0 <usleep@plt>
+    17e3:	66 0f ef c9          	pxor   %xmm1,%xmm1
+    FD_SET(STDIN_FILENO, &fds);
+    17e7:	66 0f 6f 1d 41 1c 00 	movdqa 0x1c41(%rip),%xmm3        # 3430 <CSWTCH.26+0x40>
+    17ee:	00 
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    17ef:	31 c9                	xor    %ecx,%ecx
+    17f1:	31 d2                	xor    %edx,%edx
+    17f3:	49 89 d8             	mov    %rbx,%r8
+    17f6:	48 8b 74 24 10       	mov    0x10(%rsp),%rsi
+    17fb:	bf 01 00 00 00       	mov    $0x1,%edi
+    struct timeval tv = {0, 0};
+    1800:	0f 29 4c 24 30       	movaps %xmm1,0x30(%rsp)
+    FD_SET(STDIN_FILENO, &fds);
+    1805:	0f 29 5c 24 40       	movaps %xmm3,0x40(%rsp)
+    180a:	0f 29 4c 24 50       	movaps %xmm1,0x50(%rsp)
+    180f:	0f 29 4c 24 60       	movaps %xmm1,0x60(%rsp)
+    1814:	0f 29 4c 24 70       	movaps %xmm1,0x70(%rsp)
+    1819:	0f 29 8c 24 80 00 00 	movaps %xmm1,0x80(%rsp)
+    1820:	00 
+    1821:	0f 29 8c 24 90 00 00 	movaps %xmm1,0x90(%rsp)
+    1828:	00 
+    1829:	0f 29 8c 24 a0 00 00 	movaps %xmm1,0xa0(%rsp)
+    1830:	00 
+    1831:	0f 29 8c 24 b0 00 00 	movaps %xmm1,0xb0(%rsp)
+    1838:	00 
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    1839:	e8 22 fa ff ff       	call   1260 <select@plt>
+    while (!kbhit() && game_state.game_over) {
+    183e:	85 c0                	test   %eax,%eax
+    1840:	0f 8e 7a ff ff ff    	jle    17c0 <main+0x320>
+    1846:	8b 94 24 44 bc 00 00 	mov    0xbc44(%rsp),%edx
+    184d:	bf 02 00 00 00       	mov    $0x2,%edi
+    1852:	48 8d 35 5f 1b 00 00 	lea    0x1b5f(%rip),%rsi        # 33b8 <_IO_stdin_used+0x3b8>
+    1859:	31 c0                	xor    %eax,%eax
+    185b:	e8 70 fb ff ff       	call   13d0 <__printf_chk@plt>
+    if (game_state.joy_fd != -1) close(game_state.joy_fd);
+    1860:	8b bc 24 54 bc 00 00 	mov    0xbc54(%rsp),%edi
+    1867:	83 ff ff             	cmp    $0xffffffff,%edi
+    186a:	74 05                	je     1871 <main+0x3d1>
+    186c:	e8 1f fa ff ff       	call   1290 <close@plt>
+    Mix_FreeMusic(musica_de_fundo);
+    1871:	48 8b 7c 24 28       	mov    0x28(%rsp),%rdi
+    1876:	e8 15 fb ff ff       	call   1390 <Mix_FreeMusic@plt>
+    Mix_Quit();
+    187b:	e8 30 fb ff ff       	call   13b0 <Mix_Quit@plt>
+    SDL_Quit();
+    1880:	e8 4b fa ff ff       	call   12d0 <SDL_Quit@plt>
+    disableRawMode();
+    1885:	31 c0                	xor    %eax,%eax
+    1887:	e8 94 02 00 00       	call   1b20 <disableRawMode>
+    return 0;
+    188c:	31 c0                	xor    %eax,%eax
+}
+    188e:	48 8b 94 24 78 bc 00 	mov    0xbc78(%rsp),%rdx
+    1895:	00 
+    1896:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+    189d:	00 00 
+    189f:	0f 85 42 01 00 00    	jne    19e7 <main+0x547>
+    18a5:	48 81 c4 88 bc 00 00 	add    $0xbc88,%rsp
+    18ac:	5b                   	pop    %rbx
+    18ad:	5d                   	pop    %rbp
+    18ae:	41 5c                	pop    %r12
+    18b0:	41 5d                	pop    %r13
+    18b2:	41 5e                	pop    %r14
+    18b4:	41 5f                	pop    %r15
+    18b6:	c3                   	ret
+    18b7:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+    18be:	00 00 
+        if (e.type == JS_EVENT_BUTTON && e.value == 1 && e.number < 4) {
+    18c0:	0f b6 44 24 37       	movzbl 0x37(%rsp),%eax
+    18c5:	3c 03                	cmp    $0x3,%al
+    18c7:	76 37                	jbe    1900 <main+0x460>
+    while (read(state->joy_fd, &e, sizeof(e)) > 0) {
+    18c9:	8b bc 24 54 bc 00 00 	mov    0xbc54(%rsp),%edi
+# include <bits/unistd-decl.h>
+
+__fortify_function __wur ssize_t
+read (int __fd, void *__buf, size_t __nbytes)
+{
+  return __glibc_fortify (read, __nbytes, sizeof (char),
+    18d0:	ba 08 00 00 00       	mov    $0x8,%edx
+    18d5:	48 89 de             	mov    %rbx,%rsi
+    18d8:	e8 93 fa ff ff       	call   1370 <read@plt>
+    18dd:	48 85 c0             	test   %rax,%rax
+    18e0:	0f 8e d5 fd ff ff    	jle    16bb <main+0x21b>
+        if (e.type == JS_EVENT_BUTTON && e.value == 1 && e.number < 4) {
+    18e6:	8b 44 24 34          	mov    0x34(%rsp),%eax
+    18ea:	25 ff ff ff 00       	and    $0xffffff,%eax
+    18ef:	3d 01 00 01 00       	cmp    $0x10001,%eax
+    18f4:	75 d3                	jne    18c9 <main+0x429>
+    18f6:	eb c8                	jmp    18c0 <main+0x420>
+    18f8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+    18ff:	00 
+            printf(">>> JOYSTICK APERTOU BOTÃO: %d\n", e.number + 1);
+    1900:	8d 50 01             	lea    0x1(%rax),%edx
+    1903:	48 8d 35 de 18 00 00 	lea    0x18de(%rip),%rsi        # 31e8 <_IO_stdin_used+0x1e8>
+    190a:	bf 02 00 00 00       	mov    $0x2,%edi
+    190f:	31 c0                	xor    %eax,%eax
+    1911:	e8 ba fa ff ff       	call   13d0 <__printf_chk@plt>
+            check_hits(state, e.number + 1, tempo_decorrido);
+    1916:	0f b6 74 24 37       	movzbl 0x37(%rsp),%esi
+    191b:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+    1921:	4c 89 e7             	mov    %r12,%rdi
+    1924:	83 c6 01             	add    $0x1,%esi
+    1927:	e8 b4 05 00 00       	call   1ee0 <check_hits>
+    192c:	eb 9b                	jmp    18c9 <main+0x429>
+    192e:	66 90                	xchg   %ax,%ax
+            SDL_Delay(FRAME_DELAY - frame_time_spent);
+    1930:	bf 10 00 00 00       	mov    $0x10,%edi
+    1935:	29 c7                	sub    %eax,%edi
+    1937:	e8 d4 f9 ff ff       	call   1310 <SDL_Delay@plt>
+    193c:	e9 65 fe ff ff       	jmp    17a6 <main+0x306>
+    1941:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+/* Read a character from stdin.  */
+__STDIO_INLINE int
+getchar (void)
+{
+  return getc (stdin);
+    1948:	48 8b 3d e1 36 00 00 	mov    0x36e1(%rip),%rdi        # 5030 <stdin@GLIBC_2.2.5>
+    194f:	e8 8c f9 ff ff       	call   12e0 <getc@plt>
+        if (ch == 3) {
+    1954:	3c 03                	cmp    $0x3,%al
+    1956:	74 3f                	je     1997 <main+0x4f7>
+        if (ch >= '0' && ch <= '4') {
+    1958:	8d 50 d0             	lea    -0x30(%rax),%edx
+    195b:	80 fa 04             	cmp    $0x4,%dl
+    195e:	0f 87 47 fd ff ff    	ja     16ab <main+0x20b>
+            int pista = ch - '0';
+    1964:	0f be c0             	movsbl %al,%eax
+    1967:	48 8d 35 d2 18 00 00 	lea    0x18d2(%rip),%rsi        # 3240 <_IO_stdin_used+0x240>
+    196e:	bf 02 00 00 00       	mov    $0x2,%edi
+    1973:	44 8d 68 d0          	lea    -0x30(%rax),%r13d
+    1977:	31 c0                	xor    %eax,%eax
+    1979:	44 89 ea             	mov    %r13d,%edx
+    197c:	e8 4f fa ff ff       	call   13d0 <__printf_chk@plt>
+            check_hits(state, pista, tempo_decorrido);
+    1981:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+    1987:	44 89 ee             	mov    %r13d,%esi
+    198a:	4c 89 e7             	mov    %r12,%rdi
+    198d:	e8 4e 05 00 00       	call   1ee0 <check_hits>
+    1992:	e9 14 fd ff ff       	jmp    16ab <main+0x20b>
+    1997:	48 8d 3d 72 18 00 00 	lea    0x1872(%rip),%rdi        # 3210 <_IO_stdin_used+0x210>
+    199e:	e8 1d fa ff ff       	call   13c0 <puts@plt>
+            state->game_over = 1;
+    19a3:	c7 84 24 58 bc 00 00 	movl   $0x1,0xbc58(%rsp)
+    19aa:	01 00 00 00 
+            return;
+    19ae:	e9 08 fd ff ff       	jmp    16bb <main+0x21b>
+    19b3:	48 8d 3d 36 17 00 00 	lea    0x1736(%rip),%rdi        # 30f0 <_IO_stdin_used+0xf0>
+    19ba:	e8 01 fa ff ff       	call   13c0 <puts@plt>
+    19bf:	e9 be fb ff ff       	jmp    1582 <main+0xe2>
+        printf("Nao foi possivel inicializar o SDL: %s\n", SDL_GetError());
+    19c4:	e8 17 fa ff ff       	call   13e0 <SDL_GetError@plt>
+    19c9:	48 8d 35 60 19 00 00 	lea    0x1960(%rip),%rsi        # 3330 <_IO_stdin_used+0x330>
+    19d0:	bf 02 00 00 00       	mov    $0x2,%edi
+    19d5:	48 89 c2             	mov    %rax,%rdx
+    19d8:	31 c0                	xor    %eax,%eax
+    19da:	e8 f1 f9 ff ff       	call   13d0 <__printf_chk@plt>
+        return -1;
+    19df:	83 c8 ff             	or     $0xffffffff,%eax
+    19e2:	e9 a7 fe ff ff       	jmp    188e <main+0x3ee>
+}
+    19e7:	e8 b4 f8 ff ff       	call   12a0 <__stack_chk_fail@plt>
+        printf("Nao foi possivel carregar a musica '%s': %s\n", arquivo_musica, Mix_GetError());
+    19ec:	e8 ef f9 ff ff       	call   13e0 <SDL_GetError@plt>
+    19f1:	48 89 da             	mov    %rbx,%rdx
+    19f4:	bf 02 00 00 00       	mov    $0x2,%edi
+    19f9:	48 8d 35 88 19 00 00 	lea    0x1988(%rip),%rsi        # 3388 <_IO_stdin_used+0x388>
+    1a00:	48 89 c1             	mov    %rax,%rcx
+    1a03:	31 c0                	xor    %eax,%eax
+    1a05:	e8 c6 f9 ff ff       	call   13d0 <__printf_chk@plt>
+        return -1;
+    1a0a:	eb d3                	jmp    19df <main+0x53f>
+        printf("Nao foi possivel inicializar o SDL_mixer: %s\n", Mix_GetError());
+    1a0c:	e8 cf f9 ff ff       	call   13e0 <SDL_GetError@plt>
+    1a11:	48 8d 35 40 19 00 00 	lea    0x1940(%rip),%rsi        # 3358 <_IO_stdin_used+0x358>
+    1a18:	bf 02 00 00 00       	mov    $0x2,%edi
+    1a1d:	48 89 c2             	mov    %rax,%rdx
+    1a20:	31 c0                	xor    %eax,%eax
+    1a22:	e8 a9 f9 ff ff       	call   13d0 <__printf_chk@plt>
+        return -1;
+    1a27:	eb b6                	jmp    19df <main+0x53f>
+    1a29:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001a30 <_start>:
+    1a30:	f3 0f 1e fa          	endbr64
+    1a34:	31 ed                	xor    %ebp,%ebp
+    1a36:	49 89 d1             	mov    %rdx,%r9
+    1a39:	5e                   	pop    %rsi
+    1a3a:	48 89 e2             	mov    %rsp,%rdx
+    1a3d:	48 83 e4 f0          	and    $0xfffffffffffffff0,%rsp
+    1a41:	50                   	push   %rax
+    1a42:	54                   	push   %rsp
+    1a43:	45 31 c0             	xor    %r8d,%r8d
+    1a46:	31 c9                	xor    %ecx,%ecx
+    1a48:	48 8d 3d 51 fa ff ff 	lea    -0x5af(%rip),%rdi        # 14a0 <main>
+    1a4f:	ff 15 a3 35 00 00    	call   *0x35a3(%rip)        # 4ff8 <__libc_start_main@GLIBC_2.34>
+    1a55:	f4                   	hlt
+    1a56:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+    1a5d:	00 00 00 
+
+0000000000001a60 <deregister_tm_clones>:
+    1a60:	48 8d 3d a9 35 00 00 	lea    0x35a9(%rip),%rdi        # 5010 <__TMC_END__>
+    1a67:	48 8d 05 a2 35 00 00 	lea    0x35a2(%rip),%rax        # 5010 <__TMC_END__>
+    1a6e:	48 39 f8             	cmp    %rdi,%rax
+    1a71:	74 15                	je     1a88 <deregister_tm_clones+0x28>
+    1a73:	48 8b 05 5e 35 00 00 	mov    0x355e(%rip),%rax        # 4fd8 <_ITM_deregisterTMCloneTable@Base>
+    1a7a:	48 85 c0             	test   %rax,%rax
+    1a7d:	74 09                	je     1a88 <deregister_tm_clones+0x28>
+    1a7f:	ff e0                	jmp    *%rax
+    1a81:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+    1a88:	c3                   	ret
+    1a89:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001a90 <register_tm_clones>:
+    1a90:	48 8d 3d 79 35 00 00 	lea    0x3579(%rip),%rdi        # 5010 <__TMC_END__>
+    1a97:	48 8d 35 72 35 00 00 	lea    0x3572(%rip),%rsi        # 5010 <__TMC_END__>
+    1a9e:	48 29 fe             	sub    %rdi,%rsi
+    1aa1:	48 89 f0             	mov    %rsi,%rax
+    1aa4:	48 c1 ee 3f          	shr    $0x3f,%rsi
+    1aa8:	48 c1 f8 03          	sar    $0x3,%rax
+    1aac:	48 01 c6             	add    %rax,%rsi
+    1aaf:	48 d1 fe             	sar    $1,%rsi
+    1ab2:	74 14                	je     1ac8 <register_tm_clones+0x38>
+    1ab4:	48 8b 05 35 35 00 00 	mov    0x3535(%rip),%rax        # 4ff0 <_ITM_registerTMCloneTable@Base>
+    1abb:	48 85 c0             	test   %rax,%rax
+    1abe:	74 08                	je     1ac8 <register_tm_clones+0x38>
+    1ac0:	ff e0                	jmp    *%rax
+    1ac2:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    1ac8:	c3                   	ret
+    1ac9:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001ad0 <__do_global_dtors_aux>:
+    1ad0:	f3 0f 1e fa          	endbr64
+    1ad4:	80 3d 5d 35 00 00 00 	cmpb   $0x0,0x355d(%rip)        # 5038 <completed.0>
+    1adb:	75 2b                	jne    1b08 <__do_global_dtors_aux+0x38>
+    1add:	55                   	push   %rbp
+    1ade:	48 83 3d fa 34 00 00 	cmpq   $0x0,0x34fa(%rip)        # 4fe0 <__cxa_finalize@GLIBC_2.2.5>
+    1ae5:	00 
+    1ae6:	48 89 e5             	mov    %rsp,%rbp
+    1ae9:	74 0c                	je     1af7 <__do_global_dtors_aux+0x27>
+    1aeb:	48 8b 3d 16 35 00 00 	mov    0x3516(%rip),%rdi        # 5008 <__dso_handle>
+    1af2:	e8 59 f7 ff ff       	call   1250 <__cxa_finalize@plt>
+    1af7:	e8 64 ff ff ff       	call   1a60 <deregister_tm_clones>
+    1afc:	c6 05 35 35 00 00 01 	movb   $0x1,0x3535(%rip)        # 5038 <completed.0>
+    1b03:	5d                   	pop    %rbp
+    1b04:	c3                   	ret
+    1b05:	0f 1f 00             	nopl   (%rax)
+    1b08:	c3                   	ret
+    1b09:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001b10 <frame_dummy>:
+    1b10:	f3 0f 1e fa          	endbr64
+    1b14:	e9 77 ff ff ff       	jmp    1a90 <register_tm_clones>
+    1b19:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000001b20 <disableRawMode>:
+void disableRawMode() {
+    1b20:	f3 0f 1e fa          	endbr64
+    1b24:	48 83 ec 08          	sub    $0x8,%rsp
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+    1b28:	be 02 00 00 00       	mov    $0x2,%esi
+    1b2d:	31 ff                	xor    %edi,%edi
+    1b2f:	48 8d 15 0a 35 00 00 	lea    0x350a(%rip),%rdx        # 5040 <orig_termios>
+    1b36:	e8 e5 f7 ff ff       	call   1320 <tcsetattr@plt>
+    1b3b:	bf 02 00 00 00       	mov    $0x2,%edi
+    1b40:	31 c0                	xor    %eax,%eax
+}
+    1b42:	48 83 c4 08          	add    $0x8,%rsp
+    1b46:	48 8d 35 c7 14 00 00 	lea    0x14c7(%rip),%rsi        # 3014 <_IO_stdin_used+0x14>
+    1b4d:	e9 7e f8 ff ff       	jmp    13d0 <__printf_chk@plt>
+    1b52:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+    1b59:	00 00 00 00 
+    1b5d:	0f 1f 00             	nopl   (%rax)
+
+0000000000001b60 <init_terminal>:
+void init_terminal() {
+    1b60:	f3 0f 1e fa          	endbr64
+    1b64:	48 83 ec 08          	sub    $0x8,%rsp
+    1b68:	48 8d 35 ac 14 00 00 	lea    0x14ac(%rip),%rsi        # 301b <_IO_stdin_used+0x1b>
+    1b6f:	bf 02 00 00 00       	mov    $0x2,%edi
+    1b74:	31 c0                	xor    %eax,%eax
+    1b76:	e8 55 f8 ff ff       	call   13d0 <__printf_chk@plt>
+    1b7b:	bf 02 00 00 00       	mov    $0x2,%edi
+    1b80:	31 c0                	xor    %eax,%eax
+}
+    1b82:	48 83 c4 08          	add    $0x8,%rsp
+    1b86:	48 8d 35 95 14 00 00 	lea    0x1495(%rip),%rsi        # 3022 <_IO_stdin_used+0x22>
+    1b8d:	e9 3e f8 ff ff       	jmp    13d0 <__printf_chk@plt>
+    1b92:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+    1b99:	00 00 00 00 
+    1b9d:	0f 1f 00             	nopl   (%rax)
+
+0000000000001ba0 <init_joystick>:
+int init_joystick(GameState *state) {
+    1ba0:	f3 0f 1e fa          	endbr64
+    1ba4:	53                   	push   %rbx
+    1ba5:	be 00 08 00 00       	mov    $0x800,%esi
+    1baa:	48 8d 3d 76 14 00 00 	lea    0x1476(%rip),%rdi        # 3027 <_IO_stdin_used+0x27>
+    1bb1:	31 c0                	xor    %eax,%eax
+    1bb3:	e8 48 f7 ff ff       	call   1300 <open@plt>
+    1bb8:	89 c3                	mov    %eax,%ebx
+    if (joy_fd == -1) {
+    1bba:	83 f8 ff             	cmp    $0xffffffff,%eax
+    1bbd:	74 09                	je     1bc8 <init_joystick+0x28>
+}
+    1bbf:	89 d8                	mov    %ebx,%eax
+    1bc1:	5b                   	pop    %rbx
+    1bc2:	c3                   	ret
+    1bc3:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+    1bc8:	48 8d 3d 21 15 00 00 	lea    0x1521(%rip),%rdi        # 30f0 <_IO_stdin_used+0xf0>
+    1bcf:	e8 ec f7 ff ff       	call   13c0 <puts@plt>
+    1bd4:	89 d8                	mov    %ebx,%eax
+    1bd6:	5b                   	pop    %rbx
+    1bd7:	c3                   	ret
+    1bd8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+    1bdf:	00 
+
+0000000000001be0 <enableRawMode>:
+void enableRawMode() {
+    1be0:	f3 0f 1e fa          	endbr64
+    1be4:	48 83 ec 58          	sub    $0x58,%rsp
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    1be8:	48 8d 35 51 34 00 00 	lea    0x3451(%rip),%rsi        # 5040 <orig_termios>
+    1bef:	31 ff                	xor    %edi,%edi
+void enableRawMode() {
+    1bf1:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    1bf8:	00 00 
+    1bfa:	48 89 44 24 48       	mov    %rax,0x48(%rsp)
+    1bff:	31 c0                	xor    %eax,%eax
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    1c01:	e8 3a f7 ff ff       	call   1340 <tcgetattr@plt>
+    atexit(disableRawMode);
+    1c06:	48 8d 3d 13 ff ff ff 	lea    -0xed(%rip),%rdi        # 1b20 <disableRawMode>
+    1c0d:	e8 0e 0a 00 00       	call   2620 <atexit>
+    struct termios raw = orig_termios;
+    1c12:	66 0f 6f 05 26 34 00 	movdqa 0x3426(%rip),%xmm0        # 5040 <orig_termios>
+    1c19:	00 
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    1c1a:	31 ff                	xor    %edi,%edi
+    struct termios raw = orig_termios;
+    1c1c:	66 0f 6f 0d 2c 34 00 	movdqa 0x342c(%rip),%xmm1        # 5050 <orig_termios+0x10>
+    1c23:	00 
+    1c24:	66 0f 6f 15 34 34 00 	movdqa 0x3434(%rip),%xmm2        # 5060 <orig_termios+0x20>
+    1c2b:	00 
+    1c2c:	f3 0f 6f 1d 38 34 00 	movdqu 0x3438(%rip),%xmm3        # 506c <orig_termios+0x2c>
+    1c33:	00 
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    1c34:	48 89 e2             	mov    %rsp,%rdx
+    1c37:	be 02 00 00 00       	mov    $0x2,%esi
+    struct termios raw = orig_termios;
+    1c3c:	0f 29 04 24          	movaps %xmm0,(%rsp)
+    1c40:	0f 29 54 24 20       	movaps %xmm2,0x20(%rsp)
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    1c45:	83 64 24 0c f4       	andl   $0xfffffff4,0xc(%rsp)
+    struct termios raw = orig_termios;
+    1c4a:	0f 29 4c 24 10       	movaps %xmm1,0x10(%rsp)
+    1c4f:	0f 11 5c 24 2c       	movups %xmm3,0x2c(%rsp)
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+    1c54:	e8 c7 f6 ff ff       	call   1320 <tcsetattr@plt>
+}
+    1c59:	48 8b 44 24 48       	mov    0x48(%rsp),%rax
+    1c5e:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+    1c65:	00 00 
+    1c67:	75 05                	jne    1c6e <enableRawMode+0x8e>
+    1c69:	48 83 c4 58          	add    $0x58,%rsp
+    1c6d:	c3                   	ret
+    1c6e:	e8 2d f6 ff ff       	call   12a0 <__stack_chk_fail@plt>
+    1c73:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+    1c7a:	00 00 00 00 
+    1c7e:	66 90                	xchg   %ax,%ax
+
+0000000000001c80 <kbhit>:
+int kbhit(void) {
+    1c80:	f3 0f 1e fa          	endbr64
+    1c84:	48 81 ec a8 00 00 00 	sub    $0xa8,%rsp
+    FD_ZERO(&fds);
+    1c8b:	b9 0f 00 00 00       	mov    $0xf,%ecx
+    struct timeval tv = {0, 0};
+    1c90:	66 0f ef c0          	pxor   %xmm0,%xmm0
+int kbhit(void) {
+    1c94:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    1c9b:	00 00 
+    1c9d:	48 89 84 24 98 00 00 	mov    %rax,0x98(%rsp)
+    1ca4:	00 
+    1ca5:	31 c0                	xor    %eax,%eax
+    FD_ZERO(&fds);
+    1ca7:	48 8d 54 24 18       	lea    0x18(%rsp),%rdx
+    1cac:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    1cb1:	49 89 e0             	mov    %rsp,%r8
+    FD_ZERO(&fds);
+    1cb4:	48 89 d7             	mov    %rdx,%rdi
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    1cb7:	31 d2                	xor    %edx,%edx
+    struct timeval tv = {0, 0};
+    1cb9:	0f 29 04 24          	movaps %xmm0,(%rsp)
+    FD_SET(STDIN_FILENO, &fds);
+    1cbd:	48 c7 44 24 10 01 00 	movq   $0x1,0x10(%rsp)
+    1cc4:	00 00 
+    FD_ZERO(&fds);
+    1cc6:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    1cc9:	bf 01 00 00 00       	mov    $0x1,%edi
+    1cce:	e8 8d f5 ff ff       	call   1260 <select@plt>
+    1cd3:	85 c0                	test   %eax,%eax
+    1cd5:	0f 9f c0             	setg   %al
+}
+    1cd8:	48 8b 94 24 98 00 00 	mov    0x98(%rsp),%rdx
+    1cdf:	00 
+    1ce0:	64 48 2b 14 25 28 00 	sub    %fs:0x28,%rdx
+    1ce7:	00 00 
+    1ce9:	75 0b                	jne    1cf6 <kbhit+0x76>
+    1ceb:	0f b6 c0             	movzbl %al,%eax
+    1cee:	48 81 c4 a8 00 00 00 	add    $0xa8,%rsp
+    1cf5:	c3                   	ret
+    1cf6:	e8 a5 f5 ff ff       	call   12a0 <__stack_chk_fail@plt>
+    1cfb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+
+0000000000001d00 <inicializar_jogo>:
+void inicializar_jogo(GameState *state) {
+    1d00:	f3 0f 1e fa          	endbr64
+    state->score = 0;
+    1d04:	48 8b 05 05 17 00 00 	mov    0x1705(%rip),%rax        # 3410 <CSWTCH.26+0x20>
+void inicializar_jogo(GameState *state) {
+    1d0b:	53                   	push   %rbx
+    1d0c:	48 89 fb             	mov    %rdi,%rbx
+    state->consecutive_misses = 0;
+    1d0f:	c7 87 8c bb 00 00 00 	movl   $0x0,0xbb8c(%rdi)
+    1d16:	00 00 00 
+    state->score = 0;
+    1d19:	48 89 87 84 bb 00 00 	mov    %rax,0xbb84(%rdi)
+    state->game_over = 0;
+    1d20:	c7 87 98 bb 00 00 00 	movl   $0x0,0xbb98(%rdi)
+    1d27:	00 00 00 
+    state->start_time = SDL_GetTicks();
+    1d2a:	e8 f1 f6 ff ff       	call   1420 <SDL_GetTicks@plt>
+    for (int i = 0; i < state->note_count; i++) {
+    1d2f:	48 63 93 80 bb 00 00 	movslq 0xbb80(%rbx),%rdx
+    state->start_time = SDL_GetTicks();
+    1d36:	89 83 90 bb 00 00    	mov    %eax,0xbb90(%rbx)
+    for (int i = 0; i < state->note_count; i++) {
+    1d3c:	85 d2                	test   %edx,%edx
+    1d3e:	7e 36                	jle    1d76 <inicializar_jogo+0x76>
+    1d40:	48 8d 0c 52          	lea    (%rdx,%rdx,2),%rcx
+    1d44:	48 8d 43 10          	lea    0x10(%rbx),%rax
+    1d48:	48 8d 14 c8          	lea    (%rax,%rcx,8),%rdx
+    1d4c:	83 e1 01             	and    $0x1,%ecx
+    1d4f:	74 0f                	je     1d60 <inicializar_jogo+0x60>
+        state->level_notes[i].foi_processada = 0;
+    1d51:	c7 00 00 00 00 00    	movl   $0x0,(%rax)
+    for (int i = 0; i < state->note_count; i++) {
+    1d57:	48 8d 43 28          	lea    0x28(%rbx),%rax
+    1d5b:	48 39 d0             	cmp    %rdx,%rax
+    1d5e:	74 16                	je     1d76 <inicializar_jogo+0x76>
+        state->level_notes[i].foi_processada = 0;
+    1d60:	c7 00 00 00 00 00    	movl   $0x0,(%rax)
+    for (int i = 0; i < state->note_count; i++) {
+    1d66:	48 83 c0 30          	add    $0x30,%rax
+        state->level_notes[i].foi_processada = 0;
+    1d6a:	c7 40 e8 00 00 00 00 	movl   $0x0,-0x18(%rax)
+    for (int i = 0; i < state->note_count; i++) {
+    1d71:	48 39 d0             	cmp    %rdx,%rax
+    1d74:	75 ea                	jne    1d60 <inicializar_jogo+0x60>
+    1d76:	48 8d 3d a3 13 00 00 	lea    0x13a3(%rip),%rdi        # 3120 <_IO_stdin_used+0x120>
+}
+    1d7d:	5b                   	pop    %rbx
+    1d7e:	e9 3d f6 ff ff       	jmp    13c0 <puts@plt>
+    1d83:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+    1d8a:	00 00 00 00 
+    1d8e:	66 90                	xchg   %ax,%ax
+
+0000000000001d90 <carregar_nivel>:
+void carregar_nivel(GameState *state) {
+    1d90:	f3 0f 1e fa          	endbr64
+    1d94:	41 57                	push   %r15
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    1d96:	48 8d 35 d7 12 00 00 	lea    0x12d7(%rip),%rsi        # 3074 <_IO_stdin_used+0x74>
+void carregar_nivel(GameState *state) {
+    1d9d:	41 56                	push   %r14
+    1d9f:	41 55                	push   %r13
+    1da1:	41 54                	push   %r12
+    1da3:	55                   	push   %rbp
+    1da4:	53                   	push   %rbx
+    1da5:	48 89 fb             	mov    %rdi,%rbx
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    1da8:	48 8d 3d 87 12 00 00 	lea    0x1287(%rip),%rdi        # 3036 <_IO_stdin_used+0x36>
+void carregar_nivel(GameState *state) {
+    1daf:	48 83 ec 28          	sub    $0x28,%rsp
+    1db3:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    1dba:	00 00 
+    1dbc:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
+    1dc1:	31 c0                	xor    %eax,%eax
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    1dc3:	e8 88 f6 ff ff       	call   1450 <fopen@plt>
+    if (!file) {
+    1dc8:	48 85 c0             	test   %rax,%rax
+    1dcb:	0f 84 af f6 ff ff    	je     1480 <carregar_nivel.cold>
+    1dd1:	48 8d 3d a8 13 00 00 	lea    0x13a8(%rip),%rdi        # 3180 <_IO_stdin_used+0x180>
+    1dd8:	48 89 c5             	mov    %rax,%rbp
+    state->note_count = 0;
+    1ddb:	c7 83 80 bb 00 00 00 	movl   $0x0,0xbb80(%rbx)
+    1de2:	00 00 00 
+    1de5:	4c 8d 64 24 13       	lea    0x13(%rsp),%r12
+    1dea:	4c 8d 74 24 0c       	lea    0xc(%rsp),%r14
+    1def:	4c 8d 2d 4a 12 00 00 	lea    0x124a(%rip),%r13        # 3040 <_IO_stdin_used+0x40>
+    1df6:	e8 c5 f5 ff ff       	call   13c0 <puts@plt>
+    while (fscanf(file, "%f %s", &timestamp, note_name) == 2) {
+    1dfb:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+    1e00:	31 c0                	xor    %eax,%eax
+    1e02:	4c 89 e1             	mov    %r12,%rcx
+    1e05:	4c 89 f2             	mov    %r14,%rdx
+    1e08:	4c 89 ee             	mov    %r13,%rsi
+    1e0b:	48 89 ef             	mov    %rbp,%rdi
+    1e0e:	e8 5d f4 ff ff       	call   1270 <__isoc99_fscanf@plt>
+    1e13:	83 f8 02             	cmp    $0x2,%eax
+    1e16:	0f 85 7c 00 00 00    	jne    1e98 <carregar_nivel+0x108>
+        if (state->note_count < MAX_NOTES) {
+    1e1c:	48 63 83 80 bb 00 00 	movslq 0xbb80(%rbx),%rax
+    1e23:	3d cf 07 00 00       	cmp    $0x7cf,%eax
+    1e28:	7f d6                	jg     1e00 <carregar_nivel+0x70>
+            switch (note_name[0]) {
+    1e2a:	0f b6 4c 24 13       	movzbl 0x13(%rsp),%ecx
+    1e2f:	8d 51 bf             	lea    -0x41(%rcx),%edx
+    1e32:	80 fa 06             	cmp    $0x6,%dl
+    1e35:	77 c9                	ja     1e00 <carregar_nivel+0x70>
+                state->level_notes[state->note_count].timestamp = timestamp;
+    1e37:	f3 0f 10 44 24 0c    	movss  0xc(%rsp),%xmm0
+    1e3d:	48 8d 04 40          	lea    (%rax,%rax,2),%rax
+    1e41:	0f b6 d2             	movzbl %dl,%edx
+    1e44:	48 8d 35 a5 15 00 00 	lea    0x15a5(%rip),%rsi        # 33f0 <CSWTCH.26>
+    1e4b:	48 c1 e0 03          	shl    $0x3,%rax
+    1e4f:	44 8b 3c 96          	mov    (%rsi,%rdx,4),%r15d
+#endif
+
+__fortify_function char *
+__NTH (strcpy (char *__restrict __dest, const char *__restrict __src))
+{
+  return __builtin___strcpy_chk (__dest, __src, __glibc_objsize (__dest));
+    1e53:	ba 05 00 00 00       	mov    $0x5,%edx
+    1e58:	4c 89 e6             	mov    %r12,%rsi
+    1e5b:	f3 0f 11 04 03       	movss  %xmm0,(%rbx,%rax,1)
+                strcpy(state->level_notes[state->note_count].note_name, note_name);
+    1e60:	48 8d 7c 03 04       	lea    0x4(%rbx,%rax,1),%rdi
+    1e65:	e8 16 f5 ff ff       	call   1380 <__strcpy_chk@plt>
+                state->level_notes[state->note_count].note_index = pista_mapeada;
+    1e6a:	48 63 93 80 bb 00 00 	movslq 0xbb80(%rbx),%rdx
+    1e71:	48 89 d0             	mov    %rdx,%rax
+    1e74:	48 8d 14 52          	lea    (%rdx,%rdx,2),%rdx
+    1e78:	48 8d 14 d3          	lea    (%rbx,%rdx,8),%rdx
+                state->note_count++;
+    1e7c:	83 c0 01             	add    $0x1,%eax
+                state->level_notes[state->note_count].note_index = pista_mapeada;
+    1e7f:	44 89 7a 0c          	mov    %r15d,0xc(%rdx)
+                state->level_notes[state->note_count].foi_processada = 0;
+    1e83:	c7 42 10 00 00 00 00 	movl   $0x0,0x10(%rdx)
+                state->note_count++;
+    1e8a:	89 83 80 bb 00 00    	mov    %eax,0xbb80(%rbx)
+    1e90:	e9 6b ff ff ff       	jmp    1e00 <carregar_nivel+0x70>
+    1e95:	0f 1f 00             	nopl   (%rax)
+    fclose(file);
+    1e98:	48 89 ef             	mov    %rbp,%rdi
+    1e9b:	e8 50 f4 ff ff       	call   12f0 <fclose@plt>
+    1ea0:	8b 93 80 bb 00 00    	mov    0xbb80(%rbx),%edx
+    1ea6:	31 c0                	xor    %eax,%eax
+    1ea8:	48 8d 35 09 13 00 00 	lea    0x1309(%rip),%rsi        # 31b8 <_IO_stdin_used+0x1b8>
+    1eaf:	bf 02 00 00 00       	mov    $0x2,%edi
+    1eb4:	e8 17 f5 ff ff       	call   13d0 <__printf_chk@plt>
+}
+    1eb9:	48 8b 44 24 18       	mov    0x18(%rsp),%rax
+    1ebe:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+    1ec5:	00 00 
+    1ec7:	75 0f                	jne    1ed8 <carregar_nivel+0x148>
+    1ec9:	48 83 c4 28          	add    $0x28,%rsp
+    1ecd:	5b                   	pop    %rbx
+    1ece:	5d                   	pop    %rbp
+    1ecf:	41 5c                	pop    %r12
+    1ed1:	41 5d                	pop    %r13
+    1ed3:	41 5e                	pop    %r14
+    1ed5:	41 5f                	pop    %r15
+    1ed7:	c3                   	ret
+    1ed8:	e8 c3 f3 ff ff       	call   12a0 <__stack_chk_fail@plt>
+    1edd:	0f 1f 00             	nopl   (%rax)
+
+0000000000001ee0 <check_hits>:
+void check_hits(GameState *state, int pista, double tempo_decorrido) {
+    1ee0:	f3 0f 1e fa          	endbr64
+    1ee4:	55                   	push   %rbp
+    1ee5:	53                   	push   %rbx
+    1ee6:	48 89 fb             	mov    %rdi,%rbx
+    1ee9:	48 83 ec 08          	sub    $0x8,%rsp
+    for (int i = 0; i < state->note_count; i++) {
+    1eed:	8b 8f 80 bb 00 00    	mov    0xbb80(%rdi),%ecx
+    1ef3:	85 c9                	test   %ecx,%ecx
+    1ef5:	0f 8e cd 00 00 00    	jle    1fc8 <check_hits+0xe8>
+            (tempo_decorrido > timestamp_nota - 0.2 && tempo_decorrido < timestamp_nota + 0.2)) {
+    1efb:	f2 0f 10 1d 15 15 00 	movsd  0x1515(%rip),%xmm3        # 3418 <CSWTCH.26+0x28>
+    1f02:	00 
+    1f03:	48 89 f8             	mov    %rdi,%rax
+    for (int i = 0; i < state->note_count; i++) {
+    1f06:	31 d2                	xor    %edx,%edx
+    1f08:	eb 15                	jmp    1f1f <check_hits+0x3f>
+    1f0a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    1f10:	83 c2 01             	add    $0x1,%edx
+    1f13:	48 83 c0 18          	add    $0x18,%rax
+    1f17:	39 ca                	cmp    %ecx,%edx
+    1f19:	0f 84 a9 00 00 00    	je     1fc8 <check_hits+0xe8>
+        if (state->level_notes[i].foi_processada) continue;
+    1f1f:	8b 78 10             	mov    0x10(%rax),%edi
+    1f22:	85 ff                	test   %edi,%edi
+    1f24:	75 ea                	jne    1f10 <check_hits+0x30>
+        if ((pista == pista_nota) && 
+    1f26:	39 70 0c             	cmp    %esi,0xc(%rax)
+    1f29:	75 e5                	jne    1f10 <check_hits+0x30>
+            (tempo_decorrido > timestamp_nota - 0.2 && tempo_decorrido < timestamp_nota + 0.2)) {
+    1f2b:	66 0f ef c9          	pxor   %xmm1,%xmm1
+    1f2f:	f3 0f 5a 08          	cvtss2sd (%rax),%xmm1
+    1f33:	66 0f 28 d1          	movapd %xmm1,%xmm2
+    1f37:	f2 0f 5c d3          	subsd  %xmm3,%xmm2
+        if ((pista == pista_nota) && 
+    1f3b:	66 0f 2f c2          	comisd %xmm2,%xmm0
+    1f3f:	76 cf                	jbe    1f10 <check_hits+0x30>
+            (tempo_decorrido > timestamp_nota - 0.2 && tempo_decorrido < timestamp_nota + 0.2)) {
+    1f41:	f2 0f 58 cb          	addsd  %xmm3,%xmm1
+    1f45:	66 0f 2f c8          	comisd %xmm0,%xmm1
+    1f49:	76 c5                	jbe    1f10 <check_hits+0x30>
+            printf(">>> ACERTOU! Nota %s <<<\n", state->level_notes[i].note_name);
+    1f4b:	48 63 d2             	movslq %edx,%rdx
+    1f4e:	bf 02 00 00 00       	mov    $0x2,%edi
+    1f53:	48 8d 35 ec 10 00 00 	lea    0x10ec(%rip),%rsi        # 3046 <_IO_stdin_used+0x46>
+    1f5a:	31 c0                	xor    %eax,%eax
+    1f5c:	48 8d 2c 52          	lea    (%rdx,%rdx,2),%rbp
+    1f60:	48 c1 e5 03          	shl    $0x3,%rbp
+    1f64:	48 8d 54 2b 04       	lea    0x4(%rbx,%rbp,1),%rdx
+    1f69:	e8 62 f4 ff ff       	call   13d0 <__printf_chk@plt>
+    1f6e:	bf 07 00 00 00       	mov    $0x7,%edi
+            state->score += 10 * state->combo;
+    1f73:	f3 0f 7e 8b 84 bb 00 	movq   0xbb84(%rbx),%xmm1
+    1f7a:	00 
+            state->consecutive_misses = 0;
+    1f7b:	c7 83 8c bb 00 00 00 	movl   $0x0,0xbb8c(%rbx)
+    1f82:	00 00 00 
+            state->score += 10 * state->combo;
+    1f85:	66 0f 70 e1 e5       	pshufd $0xe5,%xmm1,%xmm4
+    1f8a:	66 0f 7e e0          	movd   %xmm4,%eax
+    1f8e:	8d 04 80             	lea    (%rax,%rax,4),%eax
+    1f91:	01 c0                	add    %eax,%eax
+    1f93:	66 0f 6e c0          	movd   %eax,%xmm0
+    1f97:	b8 01 00 00 00       	mov    $0x1,%eax
+    1f9c:	66 0f 6e e8          	movd   %eax,%xmm5
+    1fa0:	66 0f 62 c5          	punpckldq %xmm5,%xmm0
+    1fa4:	66 0f fe c1          	paddd  %xmm1,%xmm0
+    1fa8:	66 0f d6 83 84 bb 00 	movq   %xmm0,0xbb84(%rbx)
+    1faf:	00 
+            state->level_notes[i].foi_processada = 1;
+    1fb0:	c7 44 2b 10 01 00 00 	movl   $0x1,0x10(%rbx,%rbp,1)
+    1fb7:	00 
+}
+    1fb8:	48 83 c4 08          	add    $0x8,%rsp
+    1fbc:	5b                   	pop    %rbx
+    1fbd:	5d                   	pop    %rbp
+    1fbe:	e9 6d f4 ff ff       	jmp    1430 <putchar@plt>
+    1fc3:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+    if (!hit && pista != 0) {
+    1fc8:	85 f6                	test   %esi,%esi
+    1fca:	74 1e                	je     1fea <check_hits+0x10a>
+        state->consecutive_misses++;
+    1fcc:	8b 83 8c bb 00 00    	mov    0xbb8c(%rbx),%eax
+    1fd2:	83 c0 01             	add    $0x1,%eax
+    1fd5:	89 83 8c bb 00 00    	mov    %eax,0xbb8c(%rbx)
+        if (state->consecutive_misses >= MAX_MISSES) {
+    1fdb:	83 f8 02             	cmp    $0x2,%eax
+    1fde:	7e 0a                	jle    1fea <check_hits+0x10a>
+            state->game_over = 1;
+    1fe0:	c7 83 98 bb 00 00 01 	movl   $0x1,0xbb98(%rbx)
+    1fe7:	00 00 00 
+}
+    1fea:	48 83 c4 08          	add    $0x8,%rsp
+    1fee:	5b                   	pop    %rbx
+    1fef:	5d                   	pop    %rbp
+    1ff0:	c3                   	ret
+    1ff1:	66 66 2e 0f 1f 84 00 	data16 cs nopw 0x0(%rax,%rax,1)
+    1ff8:	00 00 00 00 
+    1ffc:	0f 1f 40 00          	nopl   0x0(%rax)
+
+0000000000002000 <check_joystick_input>:
+void check_joystick_input(GameState *state, double tempo_decorrido) {
+    2000:	f3 0f 1e fa          	endbr64
+    2004:	41 56                	push   %r14
+    2006:	66 49 0f 7e c6       	movq   %xmm0,%r14
+    200b:	55                   	push   %rbp
+    200c:	53                   	push   %rbx
+    200d:	48 89 fb             	mov    %rdi,%rbx
+    2010:	48 83 ec 10          	sub    $0x10,%rsp
+    2014:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    201b:	00 00 
+    201d:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
+    2022:	31 c0                	xor    %eax,%eax
+    while (read(state->joy_fd, &e, sizeof(e)) > 0) {
+    2024:	48 89 e5             	mov    %rsp,%rbp
+    2027:	66 0f 1f 84 00 00 00 	nopw   0x0(%rax,%rax,1)
+    202e:	00 00 
+    2030:	8b bb 94 bb 00 00    	mov    0xbb94(%rbx),%edi
+    2036:	ba 08 00 00 00       	mov    $0x8,%edx
+    203b:	48 89 ee             	mov    %rbp,%rsi
+    203e:	e8 2d f3 ff ff       	call   1370 <read@plt>
+    2043:	48 85 c0             	test   %rax,%rax
+    2046:	7e 48                	jle    2090 <check_joystick_input+0x90>
+        if (e.type == JS_EVENT_BUTTON && e.value == 1 && e.number < 4) {
+    2048:	8b 44 24 04          	mov    0x4(%rsp),%eax
+    204c:	25 ff ff ff 00       	and    $0xffffff,%eax
+    2051:	3d 01 00 01 00       	cmp    $0x10001,%eax
+    2056:	75 d8                	jne    2030 <check_joystick_input+0x30>
+    2058:	0f b6 54 24 07       	movzbl 0x7(%rsp),%edx
+    205d:	80 fa 03             	cmp    $0x3,%dl
+    2060:	77 ce                	ja     2030 <check_joystick_input+0x30>
+            printf(">>> JOYSTICK APERTOU BOTÃO: %d\n", e.number + 1);
+    2062:	83 c2 01             	add    $0x1,%edx
+    2065:	48 8d 35 7c 11 00 00 	lea    0x117c(%rip),%rsi        # 31e8 <_IO_stdin_used+0x1e8>
+    206c:	bf 02 00 00 00       	mov    $0x2,%edi
+    2071:	31 c0                	xor    %eax,%eax
+    2073:	e8 58 f3 ff ff       	call   13d0 <__printf_chk@plt>
+            check_hits(state, e.number + 1, tempo_decorrido);
+    2078:	0f b6 74 24 07       	movzbl 0x7(%rsp),%esi
+    207d:	66 49 0f 6e c6       	movq   %r14,%xmm0
+    2082:	48 89 df             	mov    %rbx,%rdi
+    2085:	83 c6 01             	add    $0x1,%esi
+    2088:	e8 53 fe ff ff       	call   1ee0 <check_hits>
+    208d:	eb a1                	jmp    2030 <check_joystick_input+0x30>
+    208f:	90                   	nop
+}
+    2090:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+    2095:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+    209c:	00 00 
+    209e:	75 09                	jne    20a9 <check_joystick_input+0xa9>
+    20a0:	48 83 c4 10          	add    $0x10,%rsp
+    20a4:	5b                   	pop    %rbx
+    20a5:	5d                   	pop    %rbp
+    20a6:	41 5e                	pop    %r14
+    20a8:	c3                   	ret
+    20a9:	e8 f2 f1 ff ff       	call   12a0 <__stack_chk_fail@plt>
+    20ae:	66 90                	xchg   %ax,%ax
+
+00000000000020b0 <process_input>:
+void process_input(GameState *state, double tempo_decorrido) {
+    20b0:	f3 0f 1e fa          	endbr64
+    20b4:	41 56                	push   %r14
+    FD_ZERO(&fds);
+    20b6:	b9 0f 00 00 00       	mov    $0xf,%ecx
+void process_input(GameState *state, double tempo_decorrido) {
+    20bb:	66 49 0f 7e c6       	movq   %xmm0,%r14
+    struct timeval tv = {0, 0};
+    20c0:	66 0f ef c0          	pxor   %xmm0,%xmm0
+void process_input(GameState *state, double tempo_decorrido) {
+    20c4:	41 54                	push   %r12
+    20c6:	55                   	push   %rbp
+    20c7:	53                   	push   %rbx
+    20c8:	48 89 fb             	mov    %rdi,%rbx
+    20cb:	48 81 ec a8 00 00 00 	sub    $0xa8,%rsp
+    20d2:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    20d9:	00 00 
+    20db:	48 89 84 24 98 00 00 	mov    %rax,0x98(%rsp)
+    20e2:	00 
+    20e3:	31 c0                	xor    %eax,%eax
+    FD_ZERO(&fds);
+    20e5:	48 8d 54 24 18       	lea    0x18(%rsp),%rdx
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    20ea:	48 89 e5             	mov    %rsp,%rbp
+    FD_ZERO(&fds);
+    20ed:	48 8d 74 24 10       	lea    0x10(%rsp),%rsi
+    20f2:	48 89 d7             	mov    %rdx,%rdi
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    20f5:	49 89 e8             	mov    %rbp,%r8
+    20f8:	31 d2                	xor    %edx,%edx
+    struct timeval tv = {0, 0};
+    20fa:	0f 29 04 24          	movaps %xmm0,(%rsp)
+    FD_SET(STDIN_FILENO, &fds);
+    20fe:	48 c7 44 24 10 01 00 	movq   $0x1,0x10(%rsp)
+    2105:	00 00 
+    FD_ZERO(&fds);
+    2107:	f3 48 ab             	rep stos %rax,%es:(%rdi)
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+    210a:	bf 01 00 00 00       	mov    $0x1,%edi
+    210f:	e8 4c f1 ff ff       	call   1260 <select@plt>
+    if (kbhit()) { 
+    2114:	85 c0                	test   %eax,%eax
+    2116:	0f 8f 9c 00 00 00    	jg     21b8 <process_input+0x108>
+    if (state->joy_fd != -1) {
+    211c:	8b bb 94 bb 00 00    	mov    0xbb94(%rbx),%edi
+    2122:	83 ff ff             	cmp    $0xffffffff,%edi
+    2125:	75 38                	jne    215f <process_input+0xaf>
+}
+    2127:	48 8b 84 24 98 00 00 	mov    0x98(%rsp),%rax
+    212e:	00 
+    212f:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+    2136:	00 00 
+    2138:	0f 85 e3 00 00 00    	jne    2221 <process_input+0x171>
+    213e:	48 81 c4 a8 00 00 00 	add    $0xa8,%rsp
+    2145:	5b                   	pop    %rbx
+    2146:	5d                   	pop    %rbp
+    2147:	41 5c                	pop    %r12
+    2149:	41 5e                	pop    %r14
+    214b:	c3                   	ret
+    214c:	0f 1f 40 00          	nopl   0x0(%rax)
+        if (e.type == JS_EVENT_BUTTON && e.value == 1 && e.number < 4) {
+    2150:	0f b6 44 24 07       	movzbl 0x7(%rsp),%eax
+    2155:	3c 03                	cmp    $0x3,%al
+    2157:	76 2f                	jbe    2188 <process_input+0xd8>
+    while (read(state->joy_fd, &e, sizeof(e)) > 0) {
+    2159:	8b bb 94 bb 00 00    	mov    0xbb94(%rbx),%edi
+    215f:	ba 08 00 00 00       	mov    $0x8,%edx
+    2164:	48 89 ee             	mov    %rbp,%rsi
+    2167:	e8 04 f2 ff ff       	call   1370 <read@plt>
+    216c:	48 85 c0             	test   %rax,%rax
+    216f:	7e b6                	jle    2127 <process_input+0x77>
+        if (e.type == JS_EVENT_BUTTON && e.value == 1 && e.number < 4) {
+    2171:	8b 44 24 04          	mov    0x4(%rsp),%eax
+    2175:	25 ff ff ff 00       	and    $0xffffff,%eax
+    217a:	3d 01 00 01 00       	cmp    $0x10001,%eax
+    217f:	75 d8                	jne    2159 <process_input+0xa9>
+    2181:	eb cd                	jmp    2150 <process_input+0xa0>
+    2183:	0f 1f 44 00 00       	nopl   0x0(%rax,%rax,1)
+            printf(">>> JOYSTICK APERTOU BOTÃO: %d\n", e.number + 1);
+    2188:	8d 50 01             	lea    0x1(%rax),%edx
+    218b:	48 8d 35 56 10 00 00 	lea    0x1056(%rip),%rsi        # 31e8 <_IO_stdin_used+0x1e8>
+    2192:	bf 02 00 00 00       	mov    $0x2,%edi
+    2197:	31 c0                	xor    %eax,%eax
+    2199:	e8 32 f2 ff ff       	call   13d0 <__printf_chk@plt>
+            check_hits(state, e.number + 1, tempo_decorrido);
+    219e:	0f b6 74 24 07       	movzbl 0x7(%rsp),%esi
+    21a3:	66 49 0f 6e c6       	movq   %r14,%xmm0
+    21a8:	48 89 df             	mov    %rbx,%rdi
+    21ab:	83 c6 01             	add    $0x1,%esi
+    21ae:	e8 2d fd ff ff       	call   1ee0 <check_hits>
+    21b3:	eb a4                	jmp    2159 <process_input+0xa9>
+    21b5:	0f 1f 00             	nopl   (%rax)
+    21b8:	48 8b 3d 71 2e 00 00 	mov    0x2e71(%rip),%rdi        # 5030 <stdin@GLIBC_2.2.5>
+    21bf:	e8 1c f1 ff ff       	call   12e0 <getc@plt>
+        if (ch == 3) {
+    21c4:	3c 03                	cmp    $0x3,%al
+    21c6:	74 3e                	je     2206 <process_input+0x156>
+        if (ch >= '0' && ch <= '4') {
+    21c8:	8d 50 d0             	lea    -0x30(%rax),%edx
+    21cb:	80 fa 04             	cmp    $0x4,%dl
+    21ce:	0f 87 48 ff ff ff    	ja     211c <process_input+0x6c>
+            int pista = ch - '0';
+    21d4:	0f be c0             	movsbl %al,%eax
+    21d7:	48 8d 35 62 10 00 00 	lea    0x1062(%rip),%rsi        # 3240 <_IO_stdin_used+0x240>
+    21de:	bf 02 00 00 00       	mov    $0x2,%edi
+    21e3:	44 8d 60 d0          	lea    -0x30(%rax),%r12d
+    21e7:	31 c0                	xor    %eax,%eax
+    21e9:	44 89 e2             	mov    %r12d,%edx
+    21ec:	e8 df f1 ff ff       	call   13d0 <__printf_chk@plt>
+            check_hits(state, pista, tempo_decorrido);
+    21f1:	66 49 0f 6e c6       	movq   %r14,%xmm0
+    21f6:	44 89 e6             	mov    %r12d,%esi
+    21f9:	48 89 df             	mov    %rbx,%rdi
+    21fc:	e8 df fc ff ff       	call   1ee0 <check_hits>
+    2201:	e9 16 ff ff ff       	jmp    211c <process_input+0x6c>
+    2206:	48 8d 3d 03 10 00 00 	lea    0x1003(%rip),%rdi        # 3210 <_IO_stdin_used+0x210>
+    220d:	e8 ae f1 ff ff       	call   13c0 <puts@plt>
+            state->game_over = 1;
+    2212:	c7 83 98 bb 00 00 01 	movl   $0x1,0xbb98(%rbx)
+    2219:	00 00 00 
+            return;
+    221c:	e9 06 ff ff ff       	jmp    2127 <process_input+0x77>
+}
+    2221:	e8 7a f0 ff ff       	call   12a0 <__stack_chk_fail@plt>
+    2226:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+    222d:	00 00 00 
+
+0000000000002230 <update_game>:
+void update_game(GameState *state, double tempo_decorrido) {
+    2230:	f3 0f 1e fa          	endbr64
+    for (int i = 0; i < state->note_count; i++) {
+    2234:	8b 87 80 bb 00 00    	mov    0xbb80(%rdi),%eax
+    223a:	85 c0                	test   %eax,%eax
+    223c:	0f 8e c6 00 00 00    	jle    2308 <update_game+0xd8>
+void update_game(GameState *state, double tempo_decorrido) {
+    2242:	41 55                	push   %r13
+    2244:	4c 8d 2d 15 0e 00 00 	lea    0xe15(%rip),%r13        # 3060 <_IO_stdin_used+0x60>
+    224b:	41 54                	push   %r12
+    224d:	49 89 fc             	mov    %rdi,%r12
+    2250:	55                   	push   %rbp
+    2251:	31 ed                	xor    %ebp,%ebp
+    2253:	53                   	push   %rbx
+    2254:	48 8d 5f 04          	lea    0x4(%rdi),%rbx
+    2258:	48 83 ec 18          	sub    $0x18,%rsp
+    225c:	eb 11                	jmp    226f <update_game+0x3f>
+    225e:	66 90                	xchg   %ax,%ax
+    for (int i = 0; i < state->note_count; i++) {
+    2260:	83 c5 01             	add    $0x1,%ebp
+    2263:	48 83 c3 18          	add    $0x18,%rbx
+    2267:	39 c5                	cmp    %eax,%ebp
+    2269:	0f 8d 8a 00 00 00    	jge    22f9 <update_game+0xc9>
+        if (!state->level_notes[i].foi_processada && 
+    226f:	8b 53 0c             	mov    0xc(%rbx),%edx
+    2272:	85 d2                	test   %edx,%edx
+    2274:	75 ea                	jne    2260 <update_game+0x30>
+            tempo_decorrido > state->level_notes[i].timestamp + 0.2) {
+    2276:	66 0f ef c9          	pxor   %xmm1,%xmm1
+    227a:	f3 0f 5a 4b fc       	cvtss2sd -0x4(%rbx),%xmm1
+    227f:	f2 0f 58 0d 91 11 00 	addsd  0x1191(%rip),%xmm1        # 3418 <CSWTCH.26+0x28>
+    2286:	00 
+        if (!state->level_notes[i].foi_processada && 
+    2287:	66 0f 2f c1          	comisd %xmm1,%xmm0
+    228b:	76 d3                	jbe    2260 <update_game+0x30>
+    228d:	31 c0                	xor    %eax,%eax
+    228f:	48 89 da             	mov    %rbx,%rdx
+    2292:	4c 89 ee             	mov    %r13,%rsi
+    2295:	bf 02 00 00 00       	mov    $0x2,%edi
+    229a:	f2 0f 11 44 24 08    	movsd  %xmm0,0x8(%rsp)
+    22a0:	e8 2b f1 ff ff       	call   13d0 <__printf_chk@plt>
+            state->consecutive_misses++;
+    22a5:	41 8b 84 24 8c bb 00 	mov    0xbb8c(%r12),%eax
+    22ac:	00 
+            state->combo = 1;
+    22ad:	41 c7 84 24 88 bb 00 	movl   $0x1,0xbb88(%r12)
+    22b4:	00 01 00 00 00 
+            if (state->consecutive_misses >= MAX_MISSES) {
+    22b9:	f2 0f 10 44 24 08    	movsd  0x8(%rsp),%xmm0
+            state->consecutive_misses++;
+    22bf:	83 c0 01             	add    $0x1,%eax
+            if (state->consecutive_misses >= MAX_MISSES) {
+    22c2:	83 f8 02             	cmp    $0x2,%eax
+            state->consecutive_misses++;
+    22c5:	41 89 84 24 8c bb 00 	mov    %eax,0xbb8c(%r12)
+    22cc:	00 
+            state->level_notes[i].foi_processada = 1;
+    22cd:	c7 43 0c 01 00 00 00 	movl   $0x1,0xc(%rbx)
+            if (state->consecutive_misses >= MAX_MISSES) {
+    22d4:	7e 0c                	jle    22e2 <update_game+0xb2>
+                state->game_over = 1;
+    22d6:	41 c7 84 24 98 bb 00 	movl   $0x1,0xbb98(%r12)
+    22dd:	00 01 00 00 00 
+    for (int i = 0; i < state->note_count; i++) {
+    22e2:	41 8b 84 24 80 bb 00 	mov    0xbb80(%r12),%eax
+    22e9:	00 
+    22ea:	83 c5 01             	add    $0x1,%ebp
+    22ed:	48 83 c3 18          	add    $0x18,%rbx
+    22f1:	39 c5                	cmp    %eax,%ebp
+    22f3:	0f 8c 76 ff ff ff    	jl     226f <update_game+0x3f>
+            }
+        }
+    }
+}
+    22f9:	48 83 c4 18          	add    $0x18,%rsp
+    22fd:	5b                   	pop    %rbx
+    22fe:	5d                   	pop    %rbp
+    22ff:	41 5c                	pop    %r12
+    2301:	41 5d                	pop    %r13
+    2303:	c3                   	ret
+    2304:	0f 1f 40 00          	nopl   0x0(%rax)
+    2308:	c3                   	ret
+    2309:	0f 1f 80 00 00 00 00 	nopl   0x0(%rax)
+
+0000000000002310 <render_game>:
+
+void render_game(GameState *state, double tempo_decorrido) {
+    2310:	f3 0f 1e fa          	endbr64
+    2314:	41 57                	push   %r15
+    2316:	41 56                	push   %r14
+    2318:	41 55                	push   %r13
+    231a:	41 54                	push   %r12
+    231c:	55                   	push   %rbp
+    231d:	53                   	push   %rbx
+    231e:	48 81 ec 88 00 00 00 	sub    $0x88,%rsp
+    2325:	48 89 7c 24 08       	mov    %rdi,0x8(%rsp)
+    if (system("clear") != 0) {
+    232a:	48 8d 3d 3f 0d 00 00 	lea    0xd3f(%rip),%rdi        # 3070 <_IO_stdin_used+0x70>
+void render_game(GameState *state, double tempo_decorrido) {
+    2331:	f2 0f 11 04 24       	movsd  %xmm0,(%rsp)
+    2336:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+    233d:	00 00 
+    233f:	48 89 44 24 78       	mov    %rax,0x78(%rsp)
+    2344:	31 c0                	xor    %eax,%eax
+    if (system("clear") != 0) {
+    2346:	e8 25 f1 ff ff       	call   1470 <system@plt>
+    234b:	85 c0                	test   %eax,%eax
+    234d:	0f 85 81 02 00 00    	jne    25d4 <render_game+0x2c4>
+    2353:	48 8d 5c 24 10       	lea    0x10(%rsp),%rbx
+    2358:	48 8d 6c 24 74       	lea    0x74(%rsp),%rbp
+void render_game(GameState *state, double tempo_decorrido) {
+    235d:	48 89 d8             	mov    %rbx,%rax
+  return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+    2360:	c7 00 20 20 20 20    	movl   $0x20202020,(%rax)
+    fprintf(stderr, "Falha ao limpar tela\n");
+    }
+
+    
+    char pista_visual[ALTURA_DA_PISTA][5];
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+    2366:	48 83 c0 05          	add    $0x5,%rax
+    236a:	c6 40 ff 00          	movb   $0x0,-0x1(%rax)
+    236e:	48 39 e8             	cmp    %rbp,%rax
+    2371:	75 ed                	jne    2360 <render_game+0x50>
+        sprintf(pista_visual[i], "    ");
+    }
+
+    for (int i = 0; i < state->note_count; i++) {
+    2373:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+    2378:	48 63 90 80 bb 00 00 	movslq 0xbb80(%rax),%rdx
+    237f:	85 d2                	test   %edx,%edx
+    2381:	0f 8e 8a 00 00 00    	jle    2411 <render_game+0x101>
+    2387:	48 8d 14 52          	lea    (%rdx,%rdx,2),%rdx
+        if (!state->level_notes[i].foi_processada) {
+            float tempo_da_nota = state->level_notes[i].timestamp;
+            float dist_temporal = tempo_da_nota - tempo_decorrido;
+
+            if (dist_temporal >= 0 && dist_temporal < TEMPO_DE_ANTEVISAO) {
+    238b:	f3 0f 10 15 71 0c 00 	movss  0xc71(%rip),%xmm2        # 3004 <_IO_stdin_used+0x4>
+    2392:	00 
+    2393:	66 0f ef c9          	pxor   %xmm1,%xmm1
+                int linha = ALTURA_DA_PISTA - 1 - (int)((dist_temporal / TEMPO_DE_ANTEVISAO) * ALTURA_DA_PISTA);
+    2397:	f3 0f 10 1d 69 0c 00 	movss  0xc69(%rip),%xmm3        # 3008 <_IO_stdin_used+0x8>
+    239e:	00 
+    239f:	48 8d 14 d0          	lea    (%rax,%rdx,8),%rdx
+    23a3:	bf 13 00 00 00       	mov    $0x13,%edi
+    23a8:	0f 1f 84 00 00 00 00 	nopl   0x0(%rax,%rax,1)
+    23af:	00 
+        if (!state->level_notes[i].foi_processada) {
+    23b0:	8b 48 10             	mov    0x10(%rax),%ecx
+    23b3:	85 c9                	test   %ecx,%ecx
+    23b5:	75 51                	jne    2408 <render_game+0xf8>
+            float dist_temporal = tempo_da_nota - tempo_decorrido;
+    23b7:	66 0f ef c0          	pxor   %xmm0,%xmm0
+    23bb:	f3 0f 5a 00          	cvtss2sd (%rax),%xmm0
+    23bf:	f2 0f 5c 04 24       	subsd  (%rsp),%xmm0
+    23c4:	f2 0f 5a c0          	cvtsd2ss %xmm0,%xmm0
+            if (dist_temporal >= 0 && dist_temporal < TEMPO_DE_ANTEVISAO) {
+    23c8:	0f 2f c1             	comiss %xmm1,%xmm0
+    23cb:	72 3b                	jb     2408 <render_game+0xf8>
+    23cd:	0f 2f d0             	comiss %xmm0,%xmm2
+    23d0:	76 36                	jbe    2408 <render_game+0xf8>
+                int linha = ALTURA_DA_PISTA - 1 - (int)((dist_temporal / TEMPO_DE_ANTEVISAO) * ALTURA_DA_PISTA);
+    23d2:	f3 0f 5e c2          	divss  %xmm2,%xmm0
+    23d6:	89 f9                	mov    %edi,%ecx
+    23d8:	f3 0f 59 c3          	mulss  %xmm3,%xmm0
+    23dc:	f3 0f 2c f0          	cvttss2si %xmm0,%esi
+    23e0:	29 f1                	sub    %esi,%ecx
+                if (linha >= 0 && linha < ALTURA_DA_PISTA) {
+    23e2:	83 f9 13             	cmp    $0x13,%ecx
+    23e5:	77 21                	ja     2408 <render_game+0xf8>
+                    int pista_da_nota = state->level_notes[i].note_index;
+    23e7:	4c 63 40 0c          	movslq 0xc(%rax),%r8
+                    pista_visual[linha][pista_da_nota] = (pista_da_nota + 1) + '0';
+    23eb:	48 63 c9             	movslq %ecx,%rcx
+    23ee:	48 8d 0c 89          	lea    (%rcx,%rcx,4),%rcx
+                    int pista_da_nota = state->level_notes[i].note_index;
+    23f2:	4c 89 c6             	mov    %r8,%rsi
+                    pista_visual[linha][pista_da_nota] = (pista_da_nota + 1) + '0';
+    23f5:	48 83 e9 80          	sub    $0xffffffffffffff80,%rcx
+    23f9:	48 01 e1             	add    %rsp,%rcx
+    23fc:	83 c6 31             	add    $0x31,%esi
+    23ff:	41 88 74 08 90       	mov    %sil,-0x70(%r8,%rcx,1)
+    2404:	0f 1f 40 00          	nopl   0x0(%rax)
+    for (int i = 0; i < state->note_count; i++) {
+    2408:	48 83 c0 18          	add    $0x18,%rax
+    240c:	48 39 d0             	cmp    %rdx,%rax
+    240f:	75 9f                	jne    23b0 <render_game+0xa0>
+  return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
+    2411:	48 8d 35 50 0e 00 00 	lea    0xe50(%rip),%rsi        # 3268 <_IO_stdin_used+0x268>
+    2418:	bf 02 00 00 00       	mov    $0x2,%edi
+    241d:	31 c0                	xor    %eax,%eax
+    241f:	e8 ac ef ff ff       	call   13d0 <__printf_chk@plt>
+    2424:	48 8d 3d 61 0c 00 00 	lea    0xc61(%rip),%rdi        # 308c <_IO_stdin_used+0x8c>
+    242b:	4c 8d 3d 7d 0c 00 00 	lea    0xc7d(%rip),%r15        # 30af <_IO_stdin_used+0xaf>
+    2432:	e8 89 ef ff ff       	call   13c0 <puts@plt>
+    2437:	4c 8d 35 7d 0c 00 00 	lea    0xc7d(%rip),%r14        # 30bb <_IO_stdin_used+0xbb>
+    243e:	4c 8d 2d 5e 0c 00 00 	lea    0xc5e(%rip),%r13        # 30a3 <_IO_stdin_used+0xa3>
+    2445:	0f 1f 00             	nopl   (%rax)
+    2448:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    244d:	45 31 e4             	xor    %r12d,%r12d
+    2450:	e8 db ef ff ff       	call   1430 <putchar@plt>
+    
+    printf("+--------+\n");
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+        printf("|");
+        for (int j = 0; j < 4; j++) {
+            char note = pista_visual[i][j];
+    2455:	42 0f be 14 23       	movsbl (%rbx,%r12,1),%edx
+            if (note != ' ') {
+    245a:	80 fa 20             	cmp    $0x20,%dl
+    245d:	74 51                	je     24b0 <render_game+0x1a0>
+                switch (j) {
+    245f:	49 83 fc 02          	cmp    $0x2,%r12
+    2463:	0f 84 47 01 00 00    	je     25b0 <render_game+0x2a0>
+    2469:	49 83 fc 03          	cmp    $0x3,%r12
+    246d:	0f 84 15 01 00 00    	je     2588 <render_game+0x278>
+    2473:	49 83 fc 01          	cmp    $0x1,%r12
+    2477:	0f 84 e3 00 00 00    	je     2560 <render_game+0x250>
+    247d:	48 8d 35 13 0c 00 00 	lea    0xc13(%rip),%rsi        # 3097 <_IO_stdin_used+0x97>
+    2484:	bf 02 00 00 00       	mov    $0x2,%edi
+    2489:	31 c0                	xor    %eax,%eax
+        for (int j = 0; j < 4; j++) {
+    248b:	41 bc 01 00 00 00    	mov    $0x1,%r12d
+    2491:	e8 3a ef ff ff       	call   13d0 <__printf_chk@plt>
+    2496:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    249b:	e8 90 ef ff ff       	call   1430 <putchar@plt>
+            char note = pista_visual[i][j];
+    24a0:	42 0f be 14 23       	movsbl (%rbx,%r12,1),%edx
+            if (note != ' ') {
+    24a5:	80 fa 20             	cmp    $0x20,%dl
+    24a8:	75 b5                	jne    245f <render_game+0x14f>
+    24aa:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+    24b0:	bf 20 00 00 00       	mov    $0x20,%edi
+        for (int j = 0; j < 4; j++) {
+    24b5:	49 83 c4 01          	add    $0x1,%r12
+    24b9:	e8 72 ef ff ff       	call   1430 <putchar@plt>
+    24be:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    24c3:	e8 68 ef ff ff       	call   1430 <putchar@plt>
+    24c8:	49 83 fc 04          	cmp    $0x4,%r12
+    24cc:	75 87                	jne    2455 <render_game+0x145>
+    24ce:	bf 0a 00 00 00       	mov    $0xa,%edi
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+    24d3:	48 83 c3 05          	add    $0x5,%rbx
+    24d7:	e8 54 ef ff ff       	call   1430 <putchar@plt>
+    24dc:	48 39 eb             	cmp    %rbp,%rbx
+    24df:	0f 85 63 ff ff ff    	jne    2448 <render_game+0x138>
+    24e5:	48 8d 3d bc 0d 00 00 	lea    0xdbc(%rip),%rdi        # 32a8 <_IO_stdin_used+0x2a8>
+    24ec:	e8 cf ee ff ff       	call   13c0 <puts@plt>
+    24f1:	48 8b 5c 24 08       	mov    0x8(%rsp),%rbx
+    24f6:	f2 0f 10 04 24       	movsd  (%rsp),%xmm0
+    24fb:	41 b9 03 00 00 00    	mov    $0x3,%r9d
+    2501:	48 8d 35 c0 0d 00 00 	lea    0xdc0(%rip),%rsi        # 32c8 <_IO_stdin_used+0x2c8>
+    2508:	bf 02 00 00 00       	mov    $0x2,%edi
+    250d:	b8 01 00 00 00       	mov    $0x1,%eax
+    2512:	8b 8b 88 bb 00 00    	mov    0xbb88(%rbx),%ecx
+    2518:	8b 93 84 bb 00 00    	mov    0xbb84(%rbx),%edx
+    251e:	44 8b 83 8c bb 00 00 	mov    0xbb8c(%rbx),%r8d
+    2525:	e8 a6 ee ff ff       	call   13d0 <__printf_chk@plt>
+
+    printf("Tempo: %.2f s | Pontos: %d | Combo: x%d | Erros: %d/%d\n", 
+           tempo_decorrido, state->score, state->combo, 
+           state->consecutive_misses, MAX_MISSES);
+
+    if (state->game_over) {
+    252a:	8b 83 98 bb 00 00    	mov    0xbb98(%rbx),%eax
+    2530:	85 c0                	test   %eax,%eax
+    2532:	0f 85 be 00 00 00    	jne    25f6 <render_game+0x2e6>
+        printf("\033[31mGAME OVER! Pontuação final: %d\033[0m\n", state->score);
+    }
+    2538:	48 8b 44 24 78       	mov    0x78(%rsp),%rax
+    253d:	64 48 2b 04 25 28 00 	sub    %fs:0x28,%rax
+    2544:	00 00 
+    2546:	0f 85 cd 00 00 00    	jne    2619 <render_game+0x309>
+    254c:	48 81 c4 88 00 00 00 	add    $0x88,%rsp
+    2553:	5b                   	pop    %rbx
+    2554:	5d                   	pop    %rbp
+    2555:	41 5c                	pop    %r12
+    2557:	41 5d                	pop    %r13
+    2559:	41 5e                	pop    %r14
+    255b:	41 5f                	pop    %r15
+    255d:	c3                   	ret
+    255e:	66 90                	xchg   %ax,%ax
+    2560:	4c 89 ee             	mov    %r13,%rsi
+    2563:	bf 02 00 00 00       	mov    $0x2,%edi
+    2568:	31 c0                	xor    %eax,%eax
+        for (int j = 0; j < 4; j++) {
+    256a:	41 bc 02 00 00 00    	mov    $0x2,%r12d
+    2570:	e8 5b ee ff ff       	call   13d0 <__printf_chk@plt>
+    2575:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    257a:	e8 b1 ee ff ff       	call   1430 <putchar@plt>
+    257f:	e9 d1 fe ff ff       	jmp    2455 <render_game+0x145>
+    2584:	0f 1f 40 00          	nopl   0x0(%rax)
+    2588:	4c 89 f6             	mov    %r14,%rsi
+    258b:	bf 02 00 00 00       	mov    $0x2,%edi
+    2590:	31 c0                	xor    %eax,%eax
+    2592:	e8 39 ee ff ff       	call   13d0 <__printf_chk@plt>
+    2597:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    259c:	e8 8f ee ff ff       	call   1430 <putchar@plt>
+    25a1:	e9 28 ff ff ff       	jmp    24ce <render_game+0x1be>
+    25a6:	66 2e 0f 1f 84 00 00 	cs nopw 0x0(%rax,%rax,1)
+    25ad:	00 00 00 
+    25b0:	4c 89 fe             	mov    %r15,%rsi
+    25b3:	bf 02 00 00 00       	mov    $0x2,%edi
+    25b8:	31 c0                	xor    %eax,%eax
+    25ba:	41 bc 03 00 00 00    	mov    $0x3,%r12d
+    25c0:	e8 0b ee ff ff       	call   13d0 <__printf_chk@plt>
+    25c5:	bf 7c 00 00 00       	mov    $0x7c,%edi
+    25ca:	e8 61 ee ff ff       	call   1430 <putchar@plt>
+    25cf:	e9 81 fe ff ff       	jmp    2455 <render_game+0x145>
+  return __fprintf_chk (__stream, __USE_FORTIFY_LEVEL - 1, __fmt,
+    25d4:	48 8b 0d 45 2a 00 00 	mov    0x2a45(%rip),%rcx        # 5020 <stderr@GLIBC_2.2.5>
+    25db:	ba 15 00 00 00       	mov    $0x15,%edx
+    25e0:	be 01 00 00 00       	mov    $0x1,%esi
+    25e5:	48 8d 3d 8a 0a 00 00 	lea    0xa8a(%rip),%rdi        # 3076 <_IO_stdin_used+0x76>
+    25ec:	e8 0f ee ff ff       	call   1400 <fwrite@plt>
+    for (int i = 0; i < ALTURA_DA_PISTA; i++) {
+    25f1:	e9 5d fd ff ff       	jmp    2353 <render_game+0x43>
+  return __printf_chk (__USE_FORTIFY_LEVEL - 1, __fmt, __va_arg_pack ());
+    25f6:	48 8b 44 24 08       	mov    0x8(%rsp),%rax
+    25fb:	48 8d 35 fe 0c 00 00 	lea    0xcfe(%rip),%rsi        # 3300 <_IO_stdin_used+0x300>
+    2602:	bf 02 00 00 00       	mov    $0x2,%edi
+    2607:	8b 90 84 bb 00 00    	mov    0xbb84(%rax),%edx
+    260d:	31 c0                	xor    %eax,%eax
+    260f:	e8 bc ed ff ff       	call   13d0 <__printf_chk@plt>
+    2614:	e9 1f ff ff ff       	jmp    2538 <render_game+0x228>
+    2619:	e8 82 ec ff ff       	call   12a0 <__stack_chk_fail@plt>
+    261e:	66 90                	xchg   %ax,%ax
+
+0000000000002620 <atexit>:
+    2620:	f3 0f 1e fa          	endbr64
+    2624:	48 8b 15 dd 29 00 00 	mov    0x29dd(%rip),%rdx        # 5008 <__dso_handle>
+    262b:	31 f6                	xor    %esi,%esi
+    262d:	e9 6e ed ff ff       	jmp    13a0 <__cxa_atexit@plt>
+
+Disassembly of section .fini:
+
+0000000000002634 <_fini>:
+    2634:	f3 0f 1e fa          	endbr64
+    2638:	48 83 ec 08          	sub    $0x8,%rsp
+    263c:	48 83 c4 08          	add    $0x8,%rsp
+    2640:	c3                   	ret

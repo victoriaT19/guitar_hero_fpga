@@ -1,5 +1,5 @@
 Para mapear as notas do audio:
-gcc src/app_mp3.c kissfft/kiss_fft.c -o criador_mapa -Iinclude -Ikissfft -lm
+gcc src/app_mp3.c include/kiss_fft.c -o criador_mapa -Iinclude -Ikissfft -lm
 
 Para executar o mapeamento no audio escolhido:
 ./criador_mapa musica_piano.mp3

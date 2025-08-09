@@ -71,7 +71,7 @@ static int __init my_init(void)
 
 	/* 2. create class : appears at /sys/class */
 
-	if ((my_class = class_create(THIS_MODULE, DRIVER_CLASS)) == NULL) {
+	if ((my_class = class_create(DRIVER_CLASS)) == NULL) {
 		printk("my_driver: device class count not be created!\n");
 		goto ClassError;
 	}

@@ -21,6 +21,7 @@ CFLAGS   := -Wall -I $(INCDIR) -MMD -MP
 CXXFLAGS := -Wall -I $(INCDIR) -MMD -MP
 ASMFLAGS := -f elf
 LDFLAGS  :=
+LIBS := -lSDL2 -lSDL2_mixer
 
 ifeq ($(DEBUG),1)
 	BINDIR    := $(DBGDIR)
@@ -75,10 +76,10 @@ $(BINDIR):
 # target for c objects
 $(COBJS) : $(OBJDIR)/%.o : %.c
 ifeq ($(VERBOSE),1)
-	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -c $(CFLAGS) $< -o $@ $(LIBS)
 else
 	@echo -n "[CC] \t$<\n"
-	@$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -c $(CFLAGS) $< -o $@ $(LIBS)
 endif
 
 # target for cpp objects
@@ -102,10 +103,10 @@ endif
 # target for ELF file
 $(BINDIR)/$(PROJECT): $(OBJS)
 ifeq ($(VERBOSE),1)
-	$(LD) $(LDFLAGS) $(OBJS) -o $@
+	$(LD) $(LDFLAGS) $(OBJS) -o $@ $(LIBS)
 else
 	@echo -n "[LD] \t./$@\n"
-	@$(LD) $(LDFLAGS) $(OBJS) -o $@
+	@$(LD) $(LDFLAGS) $(OBJS) -o $@ $(LIBS)
 endif
 
 # target for disassembly and sections header info
