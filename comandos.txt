@@ -18,3 +18,6 @@ lsmod | grep snd
 dmesg | grep -i snd | tail -40
 pactl list short sinks
 pactl info
+
+speaker-test -Dhw:0,3 -c2 -t wav
+
