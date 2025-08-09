@@ -8,17 +8,16 @@ struct termios orig_termios;
 static int fd_leds = -1;
 static int fd_display = -1;
 
-// Inicializa os dispositivos da placa DE2i-150
+// =============================================
+// FUNÇÕES DE HARDWARE (DE2i-150)
+// =============================================
+
 void init_hardware() {
     fd_leds = open("/dev/mydev", O_WRONLY);
-    if (fd_leds == -1) {
-        perror("Falha ao abrir /dev/mydev para LEDs");
-    }
+    if (fd_leds == -1) perror("Falha ao abrir /dev/mydev para LEDs");
 
     fd_display = open("/dev/mydev", O_WRONLY);
-    if (fd_display == -1) {
-        perror("Falha ao abrir /dev/mydev para displays");
-    }
+    if (fd_display == -1) perror("Falha ao abrir /dev/mydev para displays");
 
     // Inicializa LEDs e displays
     uint32_t val = 0;
@@ -38,7 +37,6 @@ void init_hardware() {
     }
 }
 
-// Fecha os dispositivos da placa
 void close_hardware() {
     uint32_t val = 0;
     if (fd_leds != -1) {
@@ -59,7 +57,6 @@ void close_hardware() {
     }
 }
 
-// Atualiza os displays de 7 segmentos
 void update_displays(int score, int errors) {
     if (fd_display == -1) return;
 
@@ -79,7 +76,6 @@ void update_displays(int score, int errors) {
     write(fd_display, &left_display, sizeof(left_display));
 }
 
-// Pisca os LEDs (verde = acerto, vermelho = erro)
 void flash_led(int color) {
     if (fd_leds == -1) return;
 
@@ -107,7 +103,6 @@ void flash_led(int color) {
     write(fd_leds, &leds_off, sizeof(leds_off));
 }
 
-// Lê os push-buttons da placa
 int read_pbuttons(int fd) {
     if (fd == -1) return 0;
 
@@ -119,7 +114,109 @@ int read_pbuttons(int fd) {
     return 0;
 }
 
-// Verifica se o jogador acertou a nota
+// =============================================
+// FUNÇÕES DO JOGO
+// =============================================
+
+void enableRawMode() {
+    tcgetattr(STDIN_FILENO, &orig_termios);
+    atexit(disableRawMode);
+    struct termios raw = orig_termios;
+    raw.c_lflag &= ~(ECHO | ICANON | ISIG);
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw);
+}
+
+void disableRawMode() {
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios);
+    printf("\033[?25h");
+}
+
+int kbhit(void) {
+    struct timeval tv = {0, 0};
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
+
+void init_terminal() {
+    printf("\033[?25l"); // Esconde cursor
+    printf("\033[2J");   // Limpa tela
+}
+
+int init_joystick(GameState *state) {
+    int joy_fd = open("/dev/input/js0", O_RDONLY | O_NONBLOCK);
+    if (joy_fd == -1) {
+        printf("Joystick não detectado. Usando apenas teclado.\n");
+    }
+    return joy_fd;
+}
+
+int init_pbuttons(GameState *state) {
+    int fd = open("/dev/mydev", O_RDONLY | O_NONBLOCK);
+    if (fd == -1) {
+        perror("Falha ao abrir /dev/mydev para pbuttons");
+        return -1;
+    }
+    if (ioctl(fd, RD_PBUTTONS) < 0) {
+        perror("ioctl RD_PBUTTONS falhou");
+        close(fd);
+        return -1;
+    }
+    return fd;
+}
+
+void inicializar_jogo(GameState *state) {
+    state->score = 0;
+    state->combo = 1;
+    state->consecutive_misses = 0;
+    state->game_over = 0;
+    state->musica_playing = 0;
+    
+    for (int i = 0; i < state->note_count; i++) {
+        state->level_notes[i].foi_processada = 0;
+        state->level_notes[i].foi_pressionada = 0;
+    }
+
+    state->joy_fd = -1;
+    state->fd_pbuttons = -1;
+}
+
+void carregar_nivel(GameState *state) {
+    FILE *file = fopen(LEVEL_FILENAME, "r");
+    if (!file) {
+        perror("Não foi possível abrir o arquivo de nível");
+        exit(1);
+    }
+
+    state->note_count = 0;
+    float timestamp;
+    char note_name[5];
+    
+    while (fscanf(file, "%f %s", &timestamp, note_name) == 2) {
+        if (state->note_count < MAX_NOTES) {
+            int pista_mapeada = -1;
+
+            switch (note_name[0]) {
+                case 'C': case 'D': pista_mapeada = 0; break;
+                case 'E': case 'F': pista_mapeada = 1; break;
+                case 'G': case 'A': pista_mapeada = 2; break;
+                case 'B': pista_mapeada = 3; break;
+            }
+
+            if (pista_mapeada != -1) {
+                state->level_notes[state->note_count].timestamp = timestamp;
+                strcpy(state->level_notes[state->note_count].note_name, note_name);
+                state->level_notes[state->note_count].note_index = pista_mapeada;
+                state->level_notes[state->note_count].foi_processada = 0;
+                state->level_notes[state->note_count].foi_pressionada = 0;
+                state->note_count++;
+            }
+        }
+    }
+    fclose(file);
+}
+
 void check_hits(GameState *state, int pista, double tempo_decorrido) {
     int hit = 0;
 
@@ -160,7 +257,6 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
     }
 }
 
-// Processa entrada do teclado, joystick e push-buttons
 void process_input(GameState *state, double tempo_decorrido) {
     if (state->game_over || !state->musica_playing) return;
 
@@ -198,7 +294,6 @@ void process_input(GameState *state, double tempo_decorrido) {
     }
 }
 
-// Atualiza o estado do jogo
 void update_game(GameState *state, double tempo_decorrido) {
     for (int i = 0; i < state->note_count; i++) {
         if (!state->level_notes[i].foi_processada && 
@@ -224,7 +319,6 @@ void update_game(GameState *state, double tempo_decorrido) {
     update_displays(state->score, state->consecutive_misses);
 }
 
-// Renderiza o jogo no terminal
 void render_game(GameState *state, double tempo_decorrido) {
     if (system("clear") != 0) {
         fprintf(stderr, "Falha ao limpar tela\n");
@@ -290,7 +384,25 @@ void render_game(GameState *state, double tempo_decorrido) {
     }
 }
 
-// Função principal
+void finalizar_jogo(GameState *state) {
+    if (state->musica_playing) {
+        Mix_HaltMusic();
+    }
+
+    close_hardware();
+
+    if (state->fd_pbuttons != -1) close(state->fd_pbuttons);
+    if (state->joy_fd != -1) close(state->joy_fd);
+    if (state->musica != NULL) Mix_FreeMusic(state->musica);
+    
+    Mix_CloseAudio();
+    SDL_Quit();
+    disableRawMode();
+}
+
+// =============================================
+// MAIN (Ponto de entrada do programa)
+// =============================================
 int main() {
     enableRawMode();
     init_terminal();
@@ -397,7 +509,6 @@ int main() {
         SDL_Delay(100);
     }
 
-    close_hardware();
     finalizar_jogo(&game_state);
     return 0;
 }
