@@ -1,51 +1,23 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <termios.h>
-#include <sys/ioctl.h>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_mixer.h>
-#include <errno.h>
-#include <linux/joystick.h>
 #include "guitar_hero.h"
-#include "ioctl_cmds.h"  // seu header com os defines do ioctl
-#include "mapeamento_audio.h" // seu header com os mapeamentos de áudio
 
 struct termios orig_termios;
 
-#define FRAME_DELAY 16 // ~60 FPS
-
-void enableRawMode();
-void disableRawMode();
-int kbhit(void);
-void init_terminal();
-int init_joystick(GameState *state);
-void carregar_nivel(GameState *state);
-void inicializar_jogo(GameState *state);
-void process_input(GameState *state, double tempo_decorrido);
-void check_joystick_input(GameState *state, double tempo_decorrido);
-void check_hits(GameState *state, int pista, double tempo_decorrido);
-void update_game(GameState *state, double tempo_decorrido);
-void render_game(GameState *state, double tempo_decorrido);
-void finalizar_jogo(GameState *state);
 
 int main() {
     enableRawMode();
     init_terminal();
 
     if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0) {
-        printf("Não foi possível inicializar o SDL: %s\n", SDL_GetError());
+        fprintf(stderr, "Não foi possível inicializar o SDL: %s\n", SDL_GetError());
         return -1;
     }
 
-    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, AUDIO_BUFFER_SIZE) < 0) {
-        printf("Não foi possível inicializar o SDL_mixer: %s\n", Mix_GetError());
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0) {
+        fprintf(stderr, "Não foi possível inicializar o SDL_mixer: %s\n", Mix_GetError());
+        SDL_Quit();
         return -1;
     }
+    Mix_AllocateChannels(16);
 
     GameState game_state;
     memset(&game_state, 0, sizeof(GameState));
@@ -60,25 +32,23 @@ int main() {
         return -1;
     }
 
-    analyze_audio_to_file(audio_data, LEVEL_FILENAME)
+    analyze_audio_to_file(audio_data, LEVEL_FILENAME);
 
     free_audio_data(audio_data);
-    
+
+
     carregar_nivel(&game_state);
     inicializar_jogo(&game_state);
     game_state.joy_fd = init_joystick(&game_state);
+    game_state.fd_pbuttons = init_pbuttons(&game_state);
 
-    // Abrir device driver para LEDs e displays
-    game_state.device_fd = open("/dev/guitar_hero", O_RDWR);
-    if (game_state.device_fd < 0) {
-        perror("Erro ao abrir /dev/guitar_hero");
-        // Pode continuar sem hardware se quiser
-    }
-
-    const char *arquivo_musica = "musica_sweet.mp3";
     game_state.musica = Mix_LoadMUS(arquivo_musica);
     if (game_state.musica == NULL) {
-        printf("Não foi possível carregar a música '%s': %s\n", arquivo_musica, Mix_GetError());
+        fprintf(stderr, "Não foi possível carregar a música '%s': %s\n", arquivo_musica, Mix_GetError());
+        if (game_state.fd_pbuttons != -1) close(game_state.fd_pbuttons);
+        if (game_state.joy_fd != -1) close(game_state.joy_fd);
+        Mix_CloseAudio();
+        SDL_Quit();
         return -1;
     }
 
@@ -93,8 +63,11 @@ int main() {
     }
     printf("\nJOGUE!\n");
 
-    Mix_PlayMusic(game_state.musica, 1);
-    game_state.musica_playing = 1;
+    if (Mix_PlayMusic(game_state.musica, 1) == -1) {
+        fprintf(stderr, "Erro ao tocar musica: %s\n", Mix_GetError());
+    } else {
+        game_state.musica_playing = 1;
+    }
     game_state.start_time = SDL_GetTicks();
 
     SDL_Delay(50);
@@ -145,6 +118,9 @@ int main() {
  *           IMPLEMENTAÇÕES DAS FUNÇÕES
  ***********************************************/
 
+/* (mantenha suas implementações originais; abaixo apenas acrescentei verificações
+   e a integração de fd_pbuttons quando necessário) */
+
 void init_terminal() {
     printf("\033[?25l");
     printf("\033[2J");
@@ -156,6 +132,22 @@ int init_joystick(GameState *state) {
         printf("Joystick não detectado. Usando apenas teclado.\n");
     }
     return joy_fd;
+}
+
+/* Inicializa leitura do char device que o seu driver cria (/dev/mydev)
+   Faz o ioctl RD_PBUTTONS para que o driver passe a ler os p-buttons */
+int init_pbuttons(GameState *state) {
+    int fd = open("/dev/mydev", O_RDONLY | O_NONBLOCK);
+    if (fd == -1) {
+        perror("Falha ao abrir /dev/mydev para pbuttons");
+        return -1;
+    }
+    if (ioctl(fd, RD_PBUTTONS) < 0) {
+        perror("ioctl RD_PBUTTONS falhou");
+        close(fd);
+        return -1;
+    }
+    return fd;
 }
 
 void enableRawMode() {
@@ -190,6 +182,10 @@ void inicializar_jogo(GameState *state) {
         state->level_notes[i].foi_processada = 0;
         state->level_notes[i].foi_pressionada = 0;
     }
+
+    /* inicializa descritores como -1 por padrão */
+    state->joy_fd = -1;
+    state->fd_pbuttons = -1;
 }
 
 void carregar_nivel(GameState *state) {
@@ -230,6 +226,7 @@ void carregar_nivel(GameState *state) {
 void process_input(GameState *state, double tempo_decorrido) {
     if (state->game_over || !state->musica_playing) return;
 
+    // 1) teclado
     if (kbhit()) { 
         char ch = getchar();
         if (ch == 3) {
@@ -242,8 +239,27 @@ void process_input(GameState *state, double tempo_decorrido) {
         }
     }
     
+    2) joystick
     if (state->joy_fd != -1) {
         check_joystick_input(state, tempo_decorrido);
+    }
+
+    // 3) push-buttons da placa (lê um uint32_t do device)
+    if (state->fd_pbuttons != -1) {
+        uint32_t buttons = 0;
+        ssize_t r = read(state->fd_pbuttons, &buttons, sizeof(buttons));
+        if (r == sizeof(buttons)) {
+            // supondo que bit0 -> botão 1, bit1 -> botão 2, etc.
+            for (int i = 0; i < 4; i++) {
+                if (buttons & (1u << i)) {
+                    check_hits(state, i + 1, tempo_decorrido);
+                }
+            }
+        } else if (r == -1 && errno != EAGAIN && errno != EWOULDBLOCK) {
+            // erro real de leitura
+            perror("Erro lendo /dev/mydev");
+        }
+        // se EAGAIN/EWOULDBLOCK, não havia dados — ok (non-blocking)
     }
 }
 
@@ -267,8 +283,6 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
         
         if ((pista == pista_nota) && 
             (tempo_decorrido > timestamp_nota - 0.2 && tempo_decorrido < timestamp_nota + 0.2)) {
-            
-            // Acertou nota
             printf("\a");
             state->score += 10 * state->combo;
             state->combo++;
@@ -276,19 +290,6 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
             state->level_notes[i].foi_processada = 1;
             state->level_notes[i].foi_pressionada = 1;
             hit = 1;
-
-            // Acende LEDs verdes e apaga vermelhos
-            if (state->device_fd >= 0) {
-                unsigned char leds_verde = 0xFF;
-                unsigned char leds_vermelho = 0x00;
-                ioctl(state->device_fd, WR_GREEN_LEDS, &leds_verde);
-                ioctl(state->device_fd, WR_RED_LEDS, &leds_vermelho);
-
-                // Atualiza displays
-                ioctl(state->device_fd, WR_L_DISPLAY, &state->score);
-                ioctl(state->device_fd, WR_R_DISPLAY, &state->combo);
-            }
-
             break;
         }
     }
@@ -296,19 +297,7 @@ void check_hits(GameState *state, int pista, double tempo_decorrido) {
     if (!hit && pista != 0) {
         state->consecutive_misses++;
         state->combo = 1;
-
-        // Acende LEDs vermelhos e apaga verdes
-        if (state->device_fd >= 0) {
-            unsigned char leds_verde = 0x00;
-            unsigned char leds_vermelho = 0xFF;
-            ioctl(state->device_fd, WR_GREEN_LEDS, &leds_verde);
-            ioctl(state->device_fd, WR_RED_LEDS, &leds_vermelho);
-
-            // Atualiza displays
-            ioctl(state->device_fd, WR_L_DISPLAY, &state->score);
-            ioctl(state->device_fd, WR_R_DISPLAY, &state->combo);
-        }
-
+        
         if (state->consecutive_misses >= MAX_MISSES) {
             state->game_over = 1;
             Mix_HaltMusic();
@@ -327,19 +316,7 @@ void update_game(GameState *state, double tempo_decorrido) {
             if (!state->level_notes[i].foi_pressionada) {
                 state->consecutive_misses++;
                 state->combo = 1;
-
-                // Acende LEDs vermelhos e apaga verdes
-                if (state->device_fd >= 0) {
-                    unsigned char leds_verde = 0x00;
-                    unsigned char leds_vermelho = 0xFF;
-                    ioctl(state->device_fd, WR_GREEN_LEDS, &leds_verde);
-                    ioctl(state->device_fd, WR_RED_LEDS, &leds_vermelho);
-
-                    // Atualiza displays
-                    ioctl(state->device_fd, WR_L_DISPLAY, &state->score);
-                    ioctl(state->device_fd, WR_R_DISPLAY, &state->combo);
-                }
-
+                
                 if (state->consecutive_misses >= MAX_MISSES) {
                     state->game_over = 1;
                     Mix_HaltMusic();
@@ -354,12 +331,13 @@ void render_game(GameState *state, double tempo_decorrido) {
     if (system("clear") != 0) {
         fprintf(stderr, "Falha ao limpar tela\n");
     }
-
+    
     char pista_visual[ALTURA_DA_PISTA][5];
     for (int i = 0; i < ALTURA_DA_PISTA; i++) {
         sprintf(pista_visual[i], "    ");
     }
 
+    // Ajuste para mostrar notas apenas após 0.5s
     double tempo_ajustado = tempo_decorrido > 0.5f ? tempo_decorrido - 0.5f : 0;
 
     for (int i = 0; i < state->note_count; i++) {
@@ -379,8 +357,8 @@ void render_game(GameState *state, double tempo_decorrido) {
 
     printf(COLOR_GREEN "PISTA 1 " COLOR_RESET "| " 
            COLOR_RED "2 " COLOR_RESET "| " 
-           COLOR_YELLOW "3 " COLOR_RESET "| " 
-           COLOR_BLUE "4\n" COLOR_RESET);
+           COLOR_BLUE "3 " COLOR_RESET "| " 
+           COLOR_YELLOW "4\n" COLOR_RESET);
     
     printf("+--------+\n");
     for (int i = 0; i < ALTURA_DA_PISTA; i++) {
@@ -391,8 +369,8 @@ void render_game(GameState *state, double tempo_decorrido) {
                 switch (j) {
                     case 0: printf(COLOR_GREEN "%c" COLOR_RESET, note); break;
                     case 1: printf(COLOR_RED "%c" COLOR_RESET, note); break;
-                    case 2: printf(COLOR_YELLOW "%c" COLOR_RESET, note); break;
-                    case 3: printf(COLOR_BLUE "%c" COLOR_RESET, note); break;
+                    case 2: printf(COLOR_BLUE "%c" COLOR_RESET, note); break;
+                    case 3: printf(COLOR_YELLOW "%c" COLOR_RESET, note); break;
                 }
             } else {
                 printf(" ");
@@ -408,7 +386,7 @@ void render_game(GameState *state, double tempo_decorrido) {
            state->consecutive_misses, MAX_MISSES);
 
     if (state->game_over) {
-        printf("\n\033[31mGAME OVER! Você errou %d vezes consecutivas.\033[0m\n", MAX_MISSES);
+        printf("\n\033[31mGAME OVER! Você errou 3 vezes consecutivas.\033[0m\n");
         printf("\033[33mPontuação final: %d\033[0m\n", state->score);
         printf("Pressione qualquer tecla para sair...\n");
     }
@@ -418,18 +396,11 @@ void finalizar_jogo(GameState *state) {
     if (state->musica_playing) {
         Mix_HaltMusic();
     }
-
-    // Apaga LEDs ao finalizar
-    if (state->device_fd >= 0) {
-        unsigned char leds_off = 0x00;
-        ioctl(state->device_fd, WR_GREEN_LEDS, &leds_off);
-        ioctl(state->device_fd, WR_RED_LEDS, &leds_off);
-        close(state->device_fd);
-    }
-
     printf("\nFim de jogo! Pontuação Final: %d\n", state->score);
     if (state->joy_fd != -1) close(state->joy_fd);
+    if (state->fd_pbuttons != -1) close(state->fd_pbuttons);
     if (state->musica != NULL) Mix_FreeMusic(state->musica);
+    Mix_CloseAudio();
     Mix_Quit();
     SDL_Quit();
     disableRawMode();
